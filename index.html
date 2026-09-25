@@ -251,8 +251,8 @@ html.m #bstat .chip,html.m #bstat>b{flex:0 0 auto;min-height:40px;display:flex;a
   background:color-mix(in srgb,var(--card) 94%,transparent);color:var(--ink);box-shadow:0 2px 8px #0002;white-space:nowrap;font-family:"Jua",sans-serif;font-weight:400}
 html.m #bstat .chip.cur{border-color:#ff6fa9;background:#ffe3ef;color:#3b2f63;box-shadow:0 0 0 2px #ff6fa955,0 2px 8px #0002}
 html.m #bstat .hint2{font-size:.74rem;background:#ffffffcc;border-radius:999px;padding:6px 10px;white-space:nowrap}
-html.m .log{position:fixed;z-index:21;left:calc(var(--sl) + 10px);right:calc(var(--sr) + 70px);bottom:var(--logb);text-align:left;font-size:.74rem;color:var(--ink);min-height:0;pointer-events:none;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #fff,0 0 6px #fff}
+html.m .log{position:fixed;z-index:21;left:calc(var(--sl) + 10px);right:auto;max-width:calc(100% - var(--sl) - var(--sr) - 96px);bottom:var(--logb);text-align:left;font-family:"Jua",sans-serif;font-size:.8rem;color:#3b2f63;min-height:0;pointer-events:none;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:none;background:#ffffffe6;border:1.5px solid #d9cff5;border-radius:999px;padding:5px 12px;box-shadow:0 2px 8px #0002}
 html.m .log:empty{display:none}
 html.m body:has(.tray.show) #bstat,html.m body:has(.roomp.show) #bstat,html.m body:has(.stylep.show) #bstat,html.m body:has(.stage.toymode) #bstat,html.m body:has(.stage.drive) #bstat{display:none!important}
 html.m body:has(.actions.mobile-open) #bstat,html.m body:has(.tools.mobile-open) #bstat,html.m body:has(.actions.mobile-open) .log,html.m body:has(.tools.mobile-open) .log,html.m body:has(.actions.mobile-open) #mtool,html.m body:has(.tools.mobile-open) #mtool{display:none!important}
@@ -2563,7 +2563,7 @@ function startPair(c,type,partner){let A=c,Bx=partner;
   PAIRS.push(P);return true}
 function endPair(P,ok){PAIRS=PAIRS.filter(q=>q!==P);for(const x of[P.A,P.B]){if(isM(x)){MAINPAIR=null;mainPairAct=null;if(walkGoal&&walkGoal.type==='pair'){walkGoal=null;walkTarget=null}if(anim!=='idle'&&!['held','sleep'].includes(anim))setAnim('idle',true)}else if(x.mode==='pair'){x.mode='free';x.pair=null;x.act=null;x.pm=0;x.wait=2+Math.random()*3}}
   pairBall.visible=false;pairProp.visible=false;if(!ok)return;const a=idOf(P.A),b=idOf(P.B);
-  if(P.type==='squabble')addRel(a,b,P.st.made?2:-4);else addRel(a,b,P.type==='comfort'?6:4);
+  if(P.type==='squabble')addRel(a,b,P.st.made?2:-4);if(P.type==='squabble')log((P.st.made?'🤝 ':'😤 ')+pairNm(P.A)+' ↔ '+pairNm(P.B)+(P.st.made?' · 화해했어':' · 서로 삐졌어'));else addRel(a,b,P.type==='comfort'?6:4);
   const ra=isM(P.A)?S:P.A.rec,rb=isM(P.B)?S:P.B.rec,close=['hug','cheek','whisper','nap','handwalk','shoulder','comfort','patpat'].includes(P.type);if(close&&Math.random()<0.16){if(ra.sick&&!rb.sick)makeSick(rb,ra.sick.type);else if(rb.sick&&!ra.sick)makeSick(ra,rb.sick.type)}
   for(const x of[P.A,P.B]){if(isM(x)){S.fun=clamp(S.fun+3);gain(1)}else{x.rec.fun=clamp(x.rec.fun+4);cGain(x,2)}}
   addDiary('pr_'+P.type,`${nmOf(P.A)}랑 ${nmOf(P.B)}가 처음 ${PT[P.type]}을 했어`);renderUI()}
@@ -2574,7 +2574,8 @@ function pairTick(dt){for(const P of PAIRS.slice()){const{A,B:Bx}=P;
       if(done||P.t>6){P.phase='act';P.t=0;if(isM(A)||isM(Bx)){walkTarget=null;walkGoal=null}pairStart(P)}continue}
     for(const x of[A,Bx]){const o=x===A?Bx:A;if(['tag','train','handwalk','shoulder','photo','chorus','book'].includes(P.type))continue;if(isM(x))turnTo(posOf(o).x,posOf(o).z,dt,6);else{x.pm=0;faceTo(x,posOf(o).x,posOf(o).z,dt)}}
     const dur=pairAct(P,dt);if(P.t>dur)endPair(P,true)}}
-function pairStart(P){const{A,B:Bx,type}=P,mid=P.mid;
+function pairNm(x){const r=isM(x)?S:(x.rec||{});return (r.color||'')+(r.name||'피비')}
+function pairStart(P){const{A,B:Bx,type}=P,mid=P.mid;try{log('💞 '+pairNm(A)+' ↔ '+pairNm(Bx)+' · '+(PT[type]||type))}catch(_){}
   const touch=(y=0.9)=>mid.clone().setY(y);
   switch(type){
     case'hug':case'comfort':actX(A,{armL:0.25,armR:0.25,fwdL:-1.42,fwdR:-1.42,foreL:1.0,foreR:1.0,lean:0.24,tilt:0.10});actX(Bx,{armL:0.25,armR:0.25,fwdL:-1.42,fwdR:-1.42,foreL:1.0,foreR:1.0,lean:0.24,tilt:-0.10});animM(A,'hug');animM(Bx,'hug');emoX(A,'heart',3);emoX(Bx,type==='comfort'?'shy':'heart',3);fxAt(mid,'💗',3);
