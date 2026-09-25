@@ -460,7 +460,7 @@ function morningHealthCheck(){
     else{const p=illnessRisk(r);if(p>0&&Math.random()<p)makeSick(r,pick(SICK_TYPES).type)}}
   S.lateMinutes=0;S.lastHealthDay=S.gameDay||1;save();
 }
-function advanceGameClock(realSec){if(!S.adopted)return;const mult=S.sleeping?4:1,total=realSec*GAME_MIN_PER_REAL_SEC*mult;let left=total;
+function advanceGameClock(realSec){if(!S.adopted)return;const mult=1,total=realSec*GAME_MIN_PER_REAL_SEC*mult;let left=total;
   while(left>0){const before=S.gameMinute||480,step=Math.min(left,1440-before);if(!S.sleeping){const a=before,b=before+step;const latePart=Math.max(0,Math.min(b,1440)-Math.max(a,1380))+Math.max(0,Math.min(b,420)-Math.max(a,0));if(latePart>0){S.lateMinutes=(S.lateMinutes||0)+latePart;const drain=latePart*0.045;S.energy=clamp(S.energy-drain);for(const r of S.crew||[])r.energy=clamp((r.energy??80)-drain*.85)}}
     S.gameMinute=before+step;left-=step;if(S.gameMinute>=1440){S.gameMinute=0;S.gameDay=(S.gameDay||1)+1}}
   const m=S.gameMinute||0;if(m>=420&&m<420+GAME_MIN_PER_REAL_SEC*mult*realSec+1&&S.lastHealthDay!==(S.gameDay||1))morningHealthCheck();checkSchoolReturns();
