@@ -2,7 +2,11 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<script id="mobile-detect">
+(function(){var d=document.documentElement;function f(){var c=false;try{c=matchMedia('(pointer:coarse)').matches}catch(e){}var w=innerWidth,h=innerHeight,m=w<=760||(c&&Math.min(w,h)<=820);d.classList.toggle('m',m);d.classList.toggle('land',m&&w>h&&h<=560);d.dataset.orientation=w>h?'landscape':'portrait'}f();window.__pebiLayout=f;addEventListener('resize',f);addEventListener('orientationchange',function(){setTimeout(f,150)})})();
+</script>
+
 <title>페비츄비</title>
 <meta name="theme-color" content="#e9e4ff">
 <meta name="mobile-web-app-capable" content="yes">
@@ -94,7 +98,7 @@ h1{font-family:"Jua",sans-serif;font-weight:400;font-size:1.5rem;margin:0}
 .adopt.show{display:flex}.adopt b{font-family:"Jua",sans-serif;font-size:1.12rem;color:#6c3d24;text-shadow:0 1px #fff7d6}.adopt .shop-note{font-size:.78rem;color:#7c5b3d;line-height:1.35}.ad-row{display:flex;gap:7px;justify-content:center;margin-top:2px}
 .ad-row button{font-family:"Jua",sans-serif;font-size:.95rem;border:2px solid #6f4d31;border-radius:7px;padding:7px 14px;background:#cc5e49;color:#fff7df;box-shadow:0 2px 0 #573823;cursor:pointer}.ad-row button:disabled{opacity:.42;filter:grayscale(.35)}#ad-x{background:#a58a69}
 .stage.toymode .walkbtn,.stage.toymode .mood,.stage.toymode .viewbtn,.stage.toymode .fbw{display:none}
-.chip{font-family:"Jua",sans-serif;font-size:.8rem;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:999px;padding:2px 9px;cursor:pointer}.chip i{font-style:normal;color:var(--soft);font-size:.7rem}
+.chip{font-family:"Jua",sans-serif;font-size:.8rem;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:999px;padding:2px 9px;cursor:pointer}.chip i{font-style:normal;color:var(--soft);font-size:.7rem}.chip.cur{border-color:#ff6fa9;background:#ffe3ef}
 .hint2{color:var(--soft);font-size:.78rem}.crow{cursor:pointer;padding:2px 0}.bk-top .bar{align-self:center}
 .stage.cherrydrive{background:linear-gradient(#ffd6ea,#fff0f6 60%,#ffffff)}
 .stage.nightdrive{background:linear-gradient(#120d2e,#3a2a6a 60%,#6a4a9a)}
@@ -196,61 +200,136 @@ button:focus-visible{outline:3px solid var(--fun);outline-offset:2px}
 }
 </style>
 
-<style id="mobile-ux-v2">
-.mobile-nav,.mobile-backdrop{display:none}
-@media (max-width:760px), (pointer:coarse) and (max-width:1024px){
-  body{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
-  .wrap{max-width:none;padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px));padding-bottom:10px}
-  .stage{touch-action:none}
-  .actions,.tools{display:none}
-  .actions.mobile-open,.tools.mobile-open{
-    display:grid;position:fixed;left:8px;right:8px;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:52;
-    background:color-mix(in srgb,var(--card) 94%,transparent);border:2px solid var(--line);border-radius:20px;padding:9px;
-    box-shadow:0 14px 36px #0004;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);max-height:58dvh;overflow:auto
-  }
-  .actions.mobile-open{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
-  .actions.mobile-open button{min-height:54px;border-radius:14px;font-size:.76rem;padding:6px 2px}
-  .actions.mobile-open button span{display:block;font-size:1.35rem;margin-bottom:2px}
-  .tools.mobile-open{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-  .tools.mobile-open button,.tools.mobile-open .up{display:flex;align-items:center;justify-content:center;min-height:48px;text-align:center;white-space:normal;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:8px;font-family:"Jua",sans-serif}
-  .mobile-backdrop.show{display:block;position:fixed;inset:0;z-index:49;background:#0005;backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px)}
-  .mobile-nav{display:grid;position:fixed;left:8px;right:8px;bottom:max(7px,env(safe-area-inset-bottom,0px));z-index:55;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;background:color-mix(in srgb,var(--card) 96%,transparent);border:2px solid var(--line);border-radius:20px;padding:5px;box-shadow:0 8px 28px #0004;backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
-  .mobile-nav button{border:0;background:transparent;color:var(--ink);font-family:"Jua",sans-serif;font-size:.68rem;min-height:54px;border-radius:14px;padding:4px 2px;touch-action:manipulation}
-  .mobile-nav button span{display:block;font-size:1.35rem;line-height:1.15;margin-bottom:2px}
-  .mobile-nav button.on{background:var(--fun);color:#fff}
-  .tray.show,.roomp.show,.stylep.show{
-    position:fixed;left:8px;right:8px;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:54;max-height:58dvh;overflow:auto;box-shadow:0 14px 36px #0004;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)
-  }
-  .tray.show{justify-content:flex-start;flex-wrap:nowrap}
-  .roomp.show{border-radius:20px;padding:10px}
-  .stylep.show{border-radius:20px}
-  .modal{z-index:80}
-  .mcard{font-size:1rem}
-  .mclose,.jbtn,.opt{touch-action:manipulation}
-  .opt{min-height:58px}
-  .crow{min-height:46px;display:flex;align-items:center;padding:7px 4px}
-  .walkbtn{display:none}
-  .log{padding-bottom:2px}
-}
-@supports not (height:100dvh){@media (orientation:landscape) and (max-height:620px) and (pointer:coarse){.stage{height:calc(100vh - 58px)}}}
-@media (orientation:landscape) and (max-height:620px) and (pointer:coarse){
-  body{padding-bottom:0;overflow:auto}
-  .wrap{max-width:none;padding:6px calc(82px + env(safe-area-inset-right,0px)) 10px max(8px,env(safe-area-inset-left,0px));gap:5px}
-  header{min-height:30px} h1{font-size:1.12rem}.money,.lv{font-size:.72rem;padding:3px 7px}.exp{height:5px;margin-top:-3px}
-  .stage{height:calc(100dvh - 58px);max-height:none;min-height:250px;border-radius:18px}
-  .stats{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px 8px;padding:6px 8px;border-radius:14px}
-  .stat.love{grid-column:auto}.stat label{font-size:.68rem}.bar{height:7px}.bstat{display:none}
-  .mobile-nav{left:auto;right:max(6px,env(safe-area-inset-right,0px));top:50%;bottom:auto;transform:translateY(-50%);width:68px;grid-template-columns:1fr;gap:4px;padding:5px;border-radius:18px}
-  .mobile-nav button{min-height:56px;font-size:.62rem}.mobile-nav button span{font-size:1.28rem}
-  .actions.mobile-open,.tools.mobile-open,.tray.show,.roomp.show,.stylep.show{left:8px;right:calc(82px + env(safe-area-inset-right,0px));bottom:8px;max-height:72dvh}
-  .actions.mobile-open{grid-template-columns:repeat(6,minmax(0,1fr))}
-  .tools.mobile-open{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .modal{padding:6px calc(82px + env(safe-area-inset-right,0px)) 6px 6px;align-items:center}
-  .mcard{width:min(94vw,520px);max-height:94dvh;border-radius:18px;padding:10px}
-  .timehud{left:8px;top:8px}.viewbtn{right:8px;top:8px}.carehud{right:8px;top:43px}.mood{right:8px;top:78px}
-  .log{font-size:.72rem}
-}
+<style id="mobile-ux-v3">
+/* ===== 모바일 UX v3 : html.m(모바일) / html.land(가로) ===== */
+.mobile-nav,.mobile-backdrop,#mtool,#mwho{display:none}
+html.m{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);
+  --nav:62px;--hud:calc(var(--st) + 104px);--chipb:calc(var(--sb) + 80px);--logb:calc(var(--sb) + 130px);
+  touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;padding:0!important;overflow:hidden;overscroll-behavior:none;height:100%}
+html.m body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;padding:0;margin:0;display:block;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+html.m input,html.m textarea,html.m [contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+html.m button,html.m label,html.m .opt,html.m .chip,html.m .crow{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+html.m .wrap{position:fixed;inset:0;max-width:none;padding:0;display:block;gap:0}
+/* 3D 화면: 화면 전체 */
+html.m .stage{position:fixed;inset:0;height:auto;min-height:0;max-height:none;border:0;border-radius:0;touch-action:none;z-index:0;overscroll-behavior:none}
+html.m canvas{touch-action:none;-webkit-touch-callout:none}
+/* 상단 HUD */
+html.m header{position:fixed;z-index:20;top:calc(var(--st) + 6px);left:calc(var(--sl) + 8px);right:calc(var(--sr) + 8px);display:flex;align-items:center;justify-content:space-between;gap:6px;pointer-events:none}
+html.m header>*{pointer-events:auto}
+html.m h1{font-size:1rem;background:color-mix(in srgb,var(--card) 92%,transparent);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;max-width:52vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:0 2px 8px #0002}
+html.m .money,html.m .lv{font-size:.82rem;padding:7px 11px;min-height:34px;display:flex;align-items:center;box-shadow:0 2px 8px #0002}
+html.m .exp{position:fixed;z-index:20;top:calc(var(--st) + 45px);left:calc(var(--sl) + 16px);right:calc(var(--sr) + 16px);height:3px;margin:0}
+html.m .stats{position:fixed;z-index:20;top:calc(var(--st) + 52px);left:calc(var(--sl) + 8px);right:calc(var(--sr) + 8px);grid-template-columns:repeat(5,minmax(0,1fr));gap:4px 7px;padding:6px 9px;border-radius:16px;border-width:1.5px;
+  background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 3px 12px #0002;pointer-events:none}
+html.m .stat.love{grid-column:auto}
+html.m .stat label{font-size:.7rem;margin-bottom:3px;justify-content:space-between;white-space:nowrap}
+html.m .stat label .sw{display:none}
+html.m .stats .bar{height:6px}
+html.m .stats .bstat{display:none!important}
+/* 3D 화면 위 버튼 */
+html.m .walkbtn{display:none}
+html.m .timehud{left:calc(var(--sl) + 8px);top:var(--hud);font-size:.74rem;padding:6px 10px}
+html.m .viewbtn{right:calc(var(--sr) + 8px);top:var(--hud);font-size:.76rem;padding:8px 12px;min-height:38px}
+html.m .mood{left:50%;right:auto;transform:translateX(-50%);top:var(--hud);font-size:.76rem;padding:6px 10px;max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
+html.m .carehud{right:calc(var(--sr) + 8px);top:calc(var(--hud) + 46px)}
+html.m .bag{left:calc(var(--sl) + 8px);top:calc(var(--hud) + 38px)}
+html.m .toast{top:calc(var(--hud) + 44px);font-size:.86rem;z-index:9}
+html.m .drivebar{bottom:calc(var(--sb) + 84px);gap:6px;flex-wrap:wrap;justify-content:center;width:calc(100% - 20px)}
+html.m .drivebar button{min-height:44px;padding:8px 12px;font-size:.84rem}
+html.m .adopt{bottom:calc(var(--sb) + 82px);max-height:44dvh;overflow:auto}
+html.m .ad-row button{min-height:46px}
+html.m .fb{width:42px;height:42px;font-size:19px;line-height:36px}
+/* 피비 칩 줄 */
+html.m #bstat{position:fixed;z-index:30;left:0;right:0;bottom:var(--chipb);display:flex!important;flex-wrap:nowrap;align-items:center;gap:7px;overflow-x:auto;overflow-y:hidden;
+  padding:2px calc(var(--sr) + 10px) 4px calc(var(--sl) + 10px);background:none;border-radius:0;touch-action:pan-x;overscroll-behavior:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+html.m #bstat::-webkit-scrollbar{display:none}
+html.m #bstat .chip,html.m #bstat>b{flex:0 0 auto;min-height:40px;display:flex;align-items:center;gap:4px;padding:6px 12px;font-size:.84rem;border-radius:999px;border:1.5px solid var(--line);
+  background:color-mix(in srgb,var(--card) 94%,transparent);color:var(--ink);box-shadow:0 2px 8px #0002;white-space:nowrap;font-family:"Jua",sans-serif;font-weight:400}
+html.m #bstat .chip.cur{border-color:#ff6fa9;background:#ffe3ef;color:#3b2f63;box-shadow:0 0 0 2px #ff6fa955,0 2px 8px #0002}
+html.m #bstat .hint2{font-size:.74rem;background:#ffffffcc;border-radius:999px;padding:6px 10px;white-space:nowrap}
+html.m .log{position:fixed;z-index:21;left:calc(var(--sl) + 10px);right:calc(var(--sr) + 70px);bottom:var(--logb);text-align:left;font-size:.74rem;color:var(--ink);min-height:0;pointer-events:none;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #fff,0 0 6px #fff}
+html.m .log:empty{display:none}
+html.m body:has(.tray.show) #bstat,html.m body:has(.roomp.show) #bstat,html.m body:has(.stylep.show) #bstat,html.m body:has(.stage.toymode) #bstat,html.m body:has(.stage.drive) #bstat{display:none!important}
+html.m body:has(.roomp.show) .log,html.m body:has(.stage.toymode) .log{display:none}
+/* 현재 도구 알림 */
+html.m #mtool.show{display:flex;position:fixed;z-index:31;right:calc(var(--sr) + 10px);bottom:var(--logb);align-items:center;gap:4px;min-height:44px;padding:6px 12px;border-radius:999px;
+  border:2px solid var(--fun);background:#fff;color:#3b2f63;font-family:"Jua",sans-serif;font-size:.84rem;box-shadow:0 3px 10px #0003}
+html.m body:has(.tray.show) #mtool.show{bottom:calc(var(--sb) + 156px)}
+/* 겹친 피비 고르기 */
+#mwho.show{display:flex;position:absolute;z-index:9;transform:translate(-50%,-110%);flex-direction:column;gap:5px;background:#fff;color:#3b2f63;border:2px solid var(--line);border-radius:16px;padding:7px;box-shadow:0 6px 18px #0003;font-family:"Jua",sans-serif;min-width:130px}
+#mwho b{font-weight:400;font-size:.78rem;text-align:center;color:#7d71a8}
+#mwho button{font-family:"Jua",sans-serif;font-size:.92rem;min-height:42px;border:1.5px solid var(--line);border-radius:12px;background:#fff7fb;color:#3b2f63;padding:6px 10px;touch-action:manipulation}
+/* 하단 메뉴 */
+html.m .mobile-nav{display:grid;position:fixed;z-index:55;left:calc(var(--sl) + 8px);right:calc(var(--sr) + 8px);bottom:calc(var(--sb) + 8px);height:var(--nav);grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:4px;
+  background:color-mix(in srgb,var(--card) 96%,transparent);border:1.5px solid var(--line);border-radius:22px;box-shadow:0 8px 26px #0003;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+html.m .mobile-nav button{border:0;background:transparent;color:var(--ink);font-family:"Jua",sans-serif;font-size:.7rem;border-radius:17px;padding:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:0}
+html.m .mobile-nav button span{font-size:1.38rem;line-height:1.1}
+html.m .mobile-nav button.on{background:var(--fun);color:#fff}
+html.m .mobile-nav button:active{transform:scale(.94)}
+html.m .mobile-backdrop.show{display:block;position:fixed;inset:0;z-index:49;background:#0004}
+/* 바텀시트 공통 */
+html.m .actions,html.m .tools{display:none}
+html.m .actions.mobile-open,html.m .tools.mobile-open,html.m .tray.show,html.m .roomp.show,html.m .stylep.show{
+  position:fixed;z-index:52;left:calc(var(--sl) + 8px);right:calc(var(--sr) + 8px);bottom:calc(var(--sb) + var(--nav) + 16px);margin:0;
+  max-height:min(58dvh,calc(100dvh - var(--st) - var(--nav) - 150px));overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;
+  background:color-mix(in srgb,var(--bg) 96%,transparent);border:1.5px solid var(--line);border-radius:22px;padding:10px;box-shadow:0 12px 34px #0004;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+html.m .actions.mobile-open{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+html.m .actions.mobile-open button{min-height:66px;border-radius:16px;font-size:.78rem;padding:6px 2px;box-shadow:0 3px 0 var(--line)}
+html.m .actions.mobile-open button span{display:block;font-size:1.55rem;margin-bottom:2px}
+html.m .tools.mobile-open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html.m .tools.mobile-open button,html.m .tools.mobile-open .up{display:flex;align-items:center;justify-content:center;min-height:52px;text-align:center;white-space:normal;border:1.5px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);padding:8px;font-family:"Jua",sans-serif;font-size:.88rem}
+html.m .tray.show{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:6px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;bottom:calc(var(--sb) + var(--nav) + 16px);padding:8px}
+html.m .tray button{min-width:56px;min-height:56px;font-size:2rem;flex:0 0 auto;touch-action:none}
+html.m .roomp.show{max-height:44dvh;padding:10px}
+html.m .roomp button{min-height:44px}
+html.m .roomp button.it{min-width:54px;min-height:50px}
+html.m .stylep.show .row{grid-template-columns:5.6em 1fr 2.6em}
+html.m .stylep input[type=range]{min-height:34px;touch-action:pan-x}
+html.m .stylep .pre button{min-height:40px}
+/* 모달 → 바텀시트 */
+html.m .modal{z-index:80;align-items:flex-end;justify-content:center;padding:0;padding-top:calc(var(--st) + 24px);overscroll-behavior:contain}
+html.m .mcard{width:100%;max-width:640px;max-height:100%;border-radius:24px 24px 0 0;border-width:1.5px;border-bottom:0;padding:18px 14px calc(var(--sb) + 18px);gap:10px;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;position:relative;animation:msheet .22s ease-out}
+html.m .mcard::before{content:"";position:absolute;left:50%;top:7px;width:42px;height:5px;margin-left:-21px;border-radius:5px;background:var(--line)}
+@keyframes msheet{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+html.m .mclose,html.m .jbtn{min-height:50px;font-size:1.02rem}
+html.m .opt{min-height:62px;padding:10px 12px}
+html.m .bk-row{gap:8px}html.m .bk-row button{min-height:48px;font-size:.92rem}
+html.m .crow{min-height:48px;display:flex;align-items:center;padding:8px 4px;border-bottom:1px solid var(--line)}
+html.m .crow:last-child{border-bottom:0}
+html.m .bk-list{max-height:none;touch-action:pan-y}
+html.m .school-actions button,html.m .sick-note button,html.m .jgrid button{min-height:46px}
+html.m .evo-card button{min-height:48px;padding:8px 26px}
+html.m .bb-row button{min-height:46px;padding:8px 16px}
+
+/* ===== 가로 화면 ===== */
+html.m.land{--nav:0px;--hud:calc(var(--st) + 50px);--chipb:calc(var(--sb) + 8px);--logb:calc(var(--sb) + 58px)}
+html.m.land h1{display:none}
+html.m.land header{right:auto;left:calc(var(--sl) + 8px)}
+html.m.land .exp{display:none}
+html.m.land .stats{top:calc(var(--st) + 6px);left:calc(var(--sl) + 186px);right:calc(var(--sr) + 86px);padding:5px 9px}
+html.m.land .stat label{font-size:.66rem}
+html.m.land .mobile-nav{left:auto;right:calc(var(--sr) + 8px);top:calc(var(--st) + 8px);bottom:calc(var(--sb) + 8px);height:auto;width:68px;grid-template-columns:1fr;grid-auto-rows:1fr;border-radius:20px}
+html.m.land .mobile-nav button{font-size:.64rem}
+html.m.land #bstat{right:calc(var(--sr) + 84px)}
+html.m.land .log{right:calc(var(--sr) + 150px)}
+html.m.land #mtool.show{right:calc(var(--sr) + 86px)}
+html.m.land body:has(.tray.show) #mtool.show{bottom:calc(var(--sb) + 92px)}
+html.m.land .viewbtn,html.m.land .carehud{right:calc(var(--sr) + 86px)}
+html.m.land .drivebar,html.m.land .adopt{bottom:calc(var(--sb) + 10px)}
+html.m.land .drivebar{width:calc(100% - 110px);transform:translateX(calc(-50% - 40px))}
+html.m.land .adopt{transform:translateX(calc(-50% - 40px));max-height:70dvh}
+html.m.land .actions.mobile-open,html.m.land .tools.mobile-open,html.m.land .tray.show,html.m.land .roomp.show,html.m.land .stylep.show{
+  right:calc(var(--sr) + 86px);bottom:calc(var(--sb) + 8px);max-height:calc(100dvh - var(--st) - var(--sb) - 70px)}
+html.m.land .actions.mobile-open{grid-template-columns:repeat(6,minmax(0,1fr))}
+html.m.land .actions.mobile-open button{min-height:58px}
+html.m.land .tools.mobile-open{grid-template-columns:repeat(4,minmax(0,1fr))}
+html.m.land .roomp.show{left:auto;width:min(420px,calc(100% - 110px));max-height:calc(100dvh - var(--st) - var(--sb) - 70px)}
+html.m.land .modal{align-items:center;padding:calc(var(--st) + 8px) calc(var(--sr) + 86px) calc(var(--sb) + 8px) calc(var(--sl) + 8px)}
+html.m.land .mcard{max-width:560px;border-radius:22px;border-bottom:1.5px solid var(--line);padding-bottom:16px;max-height:100%}
 </style>
+
 
 </head>
 <body>
@@ -396,6 +475,7 @@ function tick(sec){
   S.fun=clamp(S.fun-sec*fl);
   if(S.sick&&!sl){S.energy=clamp(S.energy-sec*(S.sick.days>=3?0.05:0.02));S.fun=clamp(S.fun-sec*0.012)}
   if(sl&&S.energy>=100&&!isNightHour()){S.sleeping=false;setAnim('wake');say('잘 잤다!','happy');log(S.name+' 일어났어');maybeBirth()}
+  if(!sl&&sec<=2&&Math.random()<sec/90)gain(1);
   if(S.crew)crewNeeds(sec,sl);
 }
 const LINES={pet:['헤헤','좋아~','더 쓰다듬어줘','츄비!','💕'],feed:['냠냠','맛있다!','배불러~','또 줘'],play:['꺄르르','재밌어!','한 번 더!','신난다'],
@@ -430,9 +510,9 @@ function renderUI(){
   for(const k of['food','fun','clean','energy']){const v=Math.round(S[k]);$('v-'+k).textContent=v;const b=$('b-'+k);b.firstElementChild.style.width=v+'%';b.classList.toggle('low',v<20)}
   {const v=Math.round(S.love);$('v-love').textContent=v;$('b-love').firstElementChild.style.width=v+'%';$('money').textContent='💰 '+won(S.money)}
   $('lv').textContent='Lv.'+S.lv+' '+STAGES[stageOf(S.lv)].emo;
-  if(S.crew)renderCrewBar();$('expbar').style.width=(S.exp/(S.lv*30)*100)+'%';$('title').textContent=S.name+' 키우기';
+  if(S.crew)renderCrewBar();$('expbar').style.width=(S.exp/(S.lv*30)*100)+'%';$('title').textContent=petCount()>1?'피비 '+petCount()+'마리 키우기':S.name+' 키우기';
   $('stage').classList.toggle('night',isNightHour());const th=$('timehud');if(th){th.textContent=timeText();th.classList.toggle('night',isNightHour());th.title='게임 1일 = 현실 약 12분 · 권장 취침 22:00~07:00'}
-  const m=moodKey();$('mood').textContent=isAtSchool(S)?'🏫 학교 수업 중':S.sleeping?'zzZ':S.sick?'🤒 '+S.sick.type:S.love<25?'삐짐 😤':m==='sad'?'시무룩':S.love>=75?'너무 좋아 💕':'기분 좋음';syncSchoolVisibility();
+  const m=moodKey();$('mood').textContent=(petCount()>1?(S.color||'')+S.name+' · ':'')+(isAtSchool(S)?'🏫 학교 수업 중':S.sleeping?'zzZ':S.sick?'🤒 '+S.sick.type:S.love<25?'삐짐 😤':m==='sad'?'시무룩':S.love>=75?'너무 좋아 💕':'기분 좋음');syncSchoolVisibility();
   if(!WALK)$('walkbtn').textContent=S.sleeping?'💼 알바':'🚪 외출';
   $('a-sleep').innerHTML=S.sleeping?'<span>☀️</span>깨우기':'<span>💤</span>재우기';
   updateViewButton();
@@ -457,8 +537,8 @@ let VIEW_FOLLOW=false;try{VIEW_FOLLOW=localStorage.getItem('pebichubi-view-follo
 const HOME_VIEW=new THREE.Vector3(0,0.75,0);
 function shiftViewTarget(v){const d=v.clone().sub(controls.target);controls.target.add(d);camera.position.add(d);controls.update()}
 function clampFreeView(){if(WALK||VIEW_FOLLOW||VENUE==='drive'||VENUE==='toy')return;const ox=controls.target.x,oy=controls.target.y,oz=controls.target.z;controls.target.x=Math.max(HOME.x0+0.35,Math.min(HOME.x1-0.35,controls.target.x));controls.target.z=Math.max(HOME.z0+0.35,Math.min(HOME.z1-0.35,controls.target.z));controls.target.y=Math.max(0.25,Math.min(1.55,controls.target.y));camera.position.x+=controls.target.x-ox;camera.position.y+=controls.target.y-oy;camera.position.z+=controls.target.z-oz}
-function updateViewButton(){const b=$('viewbtn');if(!b)return;const home=!WALK&&VENUE!=='drive'&&VENUE!=='toy';b.style.display=home?'block':'none';b.textContent=VIEW_FOLLOW?'🧭 자유 시점':'🎥 따라가기';b.classList.toggle('on',VIEW_FOLLOW);b.title=VIEW_FOLLOW?'자동 추적 중 · 눌러서 자유 시점':'자유 시점 · 눌러서 대표 피비 따라가기'}
-function setViewFollow(on){VIEW_FOLLOW=!!on;try{localStorage.setItem('pebichubi-view-follow',VIEW_FOLLOW?'1':'0')}catch(e){}if(!WALK&&VENUE!=='drive'&&VENUE!=='toy'){const sc=pet?pet.scale.x:1;shiftViewTarget(VIEW_FOLLOW?new THREE.Vector3(pet.position.x,0.75*sc+pet.position.y*0.5,pet.position.z):HOME_VIEW)}updateViewButton();log(VIEW_FOLLOW?'🎥 대표 피비 따라가기':'🧭 자유 시점 · 드래그 회전 / 두 손가락 이동 / 확대축소')}
+function updateViewButton(){const b=$('viewbtn');if(!b)return;const home=!WALK&&VENUE!=='drive'&&VENUE!=='toy';b.style.display=home?'block':'none';b.textContent=VIEW_FOLLOW?'🧭 자유 시점':'🎥 따라가기';b.classList.toggle('on',VIEW_FOLLOW);b.title=VIEW_FOLLOW?'자동 추적 중 · 눌러서 자유 시점':'자유 시점 · 눌러서 선택한 피비 따라가기'}
+function setViewFollow(on){VIEW_FOLLOW=!!on;try{localStorage.setItem('pebichubi-view-follow',VIEW_FOLLOW?'1':'0')}catch(e){}if(!WALK&&VENUE!=='drive'&&VENUE!=='toy'){const sc=pet?pet.scale.x:1;shiftViewTarget(VIEW_FOLLOW?new THREE.Vector3(pet.position.x,0.75*sc+pet.position.y*0.5,pet.position.z):HOME_VIEW)}updateViewButton();log(VIEW_FOLLOW?'🎥 선택한 피비 따라가기':'🧭 자유 시점 · 한 손가락 회전 · 두 손가락 이동/확대')}
 $('viewbtn').onclick=()=>setViewFollow(!VIEW_FOLLOW);
 
 const hemi=new THREE.HemisphereLight(0xfff6ff,0xd8ccff,0.75);scene.add(new THREE.AmbientLight(0xffffff,0.22));scene.add(hemi);
@@ -511,7 +591,7 @@ function buildHouse(lv){const H=HOUSES[lv]||HOUSES[0],hw=H.w/2,hd=H.d/2,rs=(type
   const knob=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,8),new THREE.MeshStandardMaterial({color:0xffd66b}));knob.position.set(-hw+0.1,1.0,hd-2.55);house.add(knob);
   bed.position.set(hw-1.6,0,-hd+1.15);BED_SPOT.set(hw-1.4,0,-hd+2.3);puffs[0].position.set(-hw+0.9,0.36,-hd+1.0);puffs[1].position.set(-hw+1.5,0.24,-hd+0.8);puffs[2].position.set(hw-0.8,0.3,hd-1.2);
   stars.children.forEach(st=>st.position.set(-1.6+(Math.random()-.5)*1.7,1.65+(Math.random()-.5)*1.0,-hd+0.04));
-  controls.maxDistance=9+lv*2.5;const sh=6.5+lv*2.2;Object.assign(sun.shadow.camera,{left:-sh,right:sh,top:sh,bottom:-sh});sun.shadow.camera.updateProjectionMatrix();
+  controls.maxDistance=(9+lv*2.5)*(camera.aspect<1?1.5:1);const sh=6.5+lv*2.2;Object.assign(sun.shadow.camera,{left:-sh,right:sh,top:sh,bottom:-sh});sun.shadow.camera.updateProjectionMatrix();
   if(typeof rebuildDecorGrid==='function')rebuildDecorGrid();if(typeof renderRoomToys==='function'&&S)renderRoomToys();if(typeof crewBeds==='function')crewBeds()}scene.add(sun.target);
 // 침대 (잠잘 때 이동)
 const bed=new THREE.Group();
@@ -1354,17 +1434,56 @@ let dragEl=null,dragCh='';
 $('tray').addEventListener('pointerdown',e=>{const b=e.target.closest('button');if(!b)return;e.preventDefault();dragCh=b.dataset.ch;dragEl=document.createElement('div');dragEl.className='dragfood';dragEl.textContent=dragCh;document.body.appendChild(dragEl);moveDrag(e)});
 function moveDrag(e){if(!dragEl)return;dragXY={x:e.clientX,y:e.clientY};dragEl.style.left=e.clientX+'px';dragEl.style.top=e.clientY+'px';
   const r=stage.getBoundingClientRect(),m=toScreen(mouthWorld());foodNear=Math.hypot(e.clientX-r.left-m.x,e.clientY-r.top-m.y)<110&&!S.sleeping}
-addEventListener('pointermove',moveDrag);
+addEventListener('pointermove',moveDrag);addEventListener('pointercancel',()=>{if(dragEl){dragEl.remove();dragEl=null;foodNear=false}});
 addEventListener('pointerup',e=>{if(!dragEl)return;const r=stage.getBoundingClientRect(),m=toScreen(mouthWorld());
-  if(CR.size){let best=null,bd=80;for(const c of CR.values()){const bm=toScreen(c.g.localToWorld(new THREE.Vector3(0,0.86,0.5)));const d=Math.hypot(e.clientX-r.left-bm.x,e.clientY-r.top-bm.y);if(d<bd){bd=d;best=c}}const dp=Math.hypot(e.clientX-r.left-m.x,e.clientY-r.top-m.y);if(best&&bd<dp){dragEl.remove();dragEl=null;foodNear=false;feedCrew(best,dragCh);return}}
+  if(CR.size){let best=null,bd=110;for(const c of CR.values()){const bm=toScreen(c.g.localToWorld(new THREE.Vector3(0,0.86,0.5)));const d=Math.hypot(e.clientX-r.left-bm.x,e.clientY-r.top-bm.y);if(d<bd){bd=d;best=c}}const dp=Math.hypot(e.clientX-r.left-m.x,e.clientY-r.top-m.y);if(best&&bd<dp){dragEl.remove();dragEl=null;foodNear=false;feedCrew(best,dragCh);return}}
   const d=Math.hypot(e.clientX-r.left-m.x,e.clientY-r.top-m.y);dragEl.remove();dragEl=null;foodNear=false;
-  if(d<75)feedFood(dragCh);else if(d<160&&!S.sleeping)say(pick(['입에 넣어줘~','아~']),'none')});
+  if(d<105)feedFood(dragCh);else if(d<180&&!S.sleeping)say(pick(['입에 넣어줘~','아~']),'none')});
 // 캔버스 포인터
 let ptr=null;
+// ===== 📱 피비 터치 판정 (화면 기준 · 넓게 · 겹침 처리) =====
+const _pv=new THREE.Vector3(),_pr=new THREE.Vector3();
+function scrV(v){_pv.copy(v).project(camera);return{x:(_pv.x*.5+.5)*stage.clientWidth,y:(-_pv.y*.5+.5)*stage.clientHeight,z:_pv.z}}
+function segD(px,py,a,b){const dx=b.x-a.x,dy=b.y-a.y,l=dx*dx+dy*dy;let t=l>0?((px-a.x)*dx+(py-a.y)*dy)/l:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(a.x+dx*t),py-(a.y+dy*t))}
+function homePebiList(){const L=[];if(pet.visible&&!isAtSchool(S))L.push({id:S.id,g:pet,sc:pet.scale.x,lie:C.lie>0.5,main:true});for(const c of CR.values()){if(!c.g.visible||(c.rec&&isAtSchool(c.rec)))continue;L.push({id:c.rec.id,g:c.g,sc:c.g.scale.x,lie:(c.lie||0)>0.5,c})}return L}
+function pebiScreenCands(e,list){const r=stage.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,touch=e.pointerType!=='mouse',out=[];
+  _pr.setFromMatrixColumn(camera.matrixWorld,0).normalize();
+  for(const o of (list||homePebiList())){const g=o.g,sc=o.sc||1,base=g.position.clone(),h=(o.lie?0.75:1.55)*sc,top=base.clone();top.y+=h;const mid=base.clone();mid.y+=h*0.5;
+    const a=scrV(base),b=scrV(top);if(a.z>1||b.z>1)continue;const m=scrV(mid),sd=scrV(mid.clone().addScaledVector(_pr,0.52*sc*(o.lie?1.4:1)));
+    const rad=Math.max(touch?40:26,Math.hypot(sd.x-m.x,sd.y-m.y)*1.2)+(touch?10:0),d=segD(x,y,a,b);
+    if(d<=rad)out.push(Object.assign({},o,{d,n:d/rad,depth:camera.position.distanceTo(mid)}))}
+  out.sort((p,q)=>(p.d-q.d)||(p.depth-q.depth));return out}
+function nearPebis(c){if(!c.length)return[];const b=c[0].d;return c.filter(o=>o.d<=b+14&&o.n<0.8)}
+function pickPebi(e){const c=pebiScreenCands(e);if(!c.length)return null;const inside=nearPebis(c);
+  if(inside.length>1){const s=inside.find(o=>o.id===selectedPebiId);if(s)return s;return inside.slice().sort((p,q)=>p.depth-q.depth)[0]}return c[0]}
+function hitPetLoose(e){const h=hitPet(e);if(h)return h;if(!pet.visible)return null;setRay(e);const n=new THREE.Vector3();camera.getWorldDirection(n);
+  const pl=new THREE.Plane().setFromNormalAndCoplanarPoint(n,pet.position.clone().add(new THREE.Vector3(0,0.75*pet.scale.y,0)));if(!ray.ray.intersectPlane(pl,_hp))return null;
+  const l=pet.worldToLocal(_hp.clone());l.y=Math.max(0.05,Math.min(1.6,l.y));const y=l.y;return{point:_hp.clone(),local:l,distance:camera.position.distanceTo(_hp),region:y>1.12?'head':y>0.72?'face':'body',loose:true}}
+let whoEl=null,lastPebiTap={id:null,t:0};
+function hideWho(){if(whoEl)whoEl.classList.remove('show')}
+function showWho(e,list){if(!whoEl){whoEl=document.createElement('div');whoEl.id='mwho';stage.appendChild(whoEl)}const r=stage.getBoundingClientRect();
+  whoEl.innerHTML='<b>누구를 돌볼까?</b>'+list.slice(0,5).map(o=>{const q=pebiRef(o.id);return q?`<button data-id="${o.id}">${q.r.color||''} ${q.r.name} ${pebiMoodIcon(q.r)}</button>`:''}).join('');
+  whoEl.style.left=Math.max(80,Math.min(r.width-80,e.clientX-r.left))+'px';whoEl.style.top=Math.max(150,e.clientY-r.top)+'px';whoEl.classList.add('show');
+  whoEl.querySelectorAll('button').forEach(b=>{b.onpointerdown=ev=>ev.stopPropagation();b.onclick=ev=>{ev.stopPropagation();hideWho();tapPebiId(b.dataset.id,false)}});clearTimeout(whoEl._t);whoEl._t=setTimeout(hideWho,4000)}
+function tapPebiId(id,allowDbl=true){focusPebi(id);const q=pebiRef(id);if(!q)return;const now=performance.now(),dbl=allowDbl&&lastPebiTap.id===id&&now-lastPebiTap.t<400;lastPebiTap={id,t:dbl?0:now};selectPebi(id);
+  if(dbl){openPebiCard(id);return}
+  if(q.main)pat();else if(q.c)patCrew(q.c);
+  if(petCount()>1)log((q.r.color||'')+' '+q.r.name+' · 두 번 톡 = 상태 카드 · 문지르기 = 쓰담쓰담');renderUI()}
+function tapPebi(e,p){const inside=nearPebis(pebiScreenCands(e));
+  if(inside.length>1&&!inside.some(o=>o.id===selectedPebiId)){showWho(e,inside.sort((a,b)=>a.depth-b.depth));return}
+  const id=inside.length>1?selectedPebiId:(p.pk?p.pk.id:S.id);tapPebiId(id)}
+const TOUCHES=new Set();
+function cancelPtr(){if(!ptr)return;clearTimeout(ptr.timer);if(ptr.mode==='hold')releaseHold();if(ptr.mode==='pinch')setAnim('idle');ptr=null;rubAcc=0;cursor.style.display='none';controls.enabled=true}
+
 const cv=renderer.domElement;
-cv.addEventListener('pointerdown',e=>{if(EDIT){editDown(e);return}
-  const h=(tool==='hand'||tool==='soap')?hitPet(e):null;
-  ptr={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,t:performance.now(),moved:0,h,mode:null};
+cv.addEventListener('pointerdown',e=>{TOUCHES.add(e.pointerId);hideWho();
+  if(TOUCHES.size>1){if(EDIT){if(typeof edrag!=='undefined'&&edrag)editUp(e);controls.enabled=true;return}cancelPtr();return}
+  if(EDIT){editDown(e);return}
+  let pk=null;if(VENUE!=='toy'&&VENUE!=='drive'&&(tool==='hand'||tool==='soap'||tool==='shower'||tool==='feather')){pk=pickPebi(e);if(pk&&pk.id!==S.id)focusPebi(pk.id)}
+  const onMain=pk&&pk.id===S.id,crewC=pk&&!onMain?CR.get(pk.id):null;
+  const h=(tool==='hand'||tool==='soap')?(onMain?hitPetLoose(e):(pk?null:hitPet(e))):null;
+  ptr={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,t:performance.now(),moved:0,h,mode:null,pk,crew:crewC};
+  if(tool==='hand'&&crewC&&!h)controls.enabled=false;
   if(tool==='hand'&&h){controls.enabled=false;
     ptr.timer=setTimeout(()=>{if(!ptr||ptr.moved>14)return;if(h.region==='face'&&!S.sleeping){ptr.mode='pinch';pinchT=0;setAnim('pinch');walkTarget=null}
       else if(!S.sleeping&&VENUE!=='drive'){ptr.mode='hold';startHold(e)}},380)}
@@ -1372,6 +1491,7 @@ cv.addEventListener('pointerdown',e=>{if(EDIT){editDown(e);return}
 },{capture:true});
 function posCursor(e){const r=stage.getBoundingClientRect();cursor.style.left=(e.clientX-r.left)+'px';cursor.style.top=(e.clientY-r.top)+'px';ptr&&(ptr.sx=e.clientX-r.left,ptr.sy=e.clientY-r.top)}
 cv.addEventListener('pointermove',e=>{if(EDIT){editMove(e);return}if(!ptr)return;const dd=Math.hypot(e.clientX-ptr.lx,e.clientY-ptr.ly);ptr.moved+=dd;ptr.lx=e.clientX;ptr.ly=e.clientY;
+  if(tool==='hand'&&ptr.crew&&!ptr.h){if(ptr.moved>14){rubAcc+=dd;if(rubAcc>90){rubAcc=0;patCrew(ptr.crew)}}return}
   if(tool==='hand'){if(ptr.mode==='hold'){dragHold(e);return}
     if(ptr.h&&!ptr.mode&&ptr.moved>14){clearTimeout(ptr.timer);if(ptr.h.region!=='body'){ptr.mode='rub'}}
     if(ptr.mode==='rub'){rubAcc+=dd;if(rubAcc>70){rubAcc=0;rubTick()}}}
@@ -1380,21 +1500,24 @@ cv.addEventListener('pointermove',e=>{if(EDIT){editMove(e);return}if(!ptr)return
   if(tool==='shower'||tool==='soap'){posCursor(e);
     if(tool==='soap'&&!S.sleeping){const h=hitPet(e);if(h){rubAcc+=dd;if(rubAcc>28){rubAcc=0;addFoam(h.local);S.clean=clamp(S.clean+1.2);keepAnim('soaped');if(foams.length%10===1)say(pick(['보글보글','간질간질~']),foams.length%20===1?'happy':'none')}}}}
 },{capture:true});
-function endPtr(e){if(EDIT){editUp(e);return}if(!ptr)return;if(VENUE==='toy'){const p0=ptr;ptr=null;controls.enabled=true;if(p0.moved<12)toyTap(e);return}clearTimeout(ptr.timer);const p=ptr;ptr=null;controls.enabled=true;cursor.style.display='none';
-  if(p.moved<12&&!p.h&&CR.size&&(tool==='shower'||tool==='soap')){const cc=crewHitAt(e);if(cc){washCrew(cc);return}}
+function endPtr(e){const multi=TOUCHES.size>1;TOUCHES.delete(e.pointerId);if(EDIT){if(!multi)editUp(e);return}if(!ptr)return;
+  const _tap=Math.hypot(e.clientX-ptr.x,e.clientY-ptr.y)<(e.pointerType==='mouse'?8:18)&&ptr.moved<(e.pointerType==='mouse'?16:40)&&e.type!=='pointercancel';
+  if(VENUE==='toy'){const p0=ptr;ptr=null;controls.enabled=true;if(_tap)toyTap(e);return}clearTimeout(ptr.timer);const p=ptr;ptr=null;controls.enabled=true;cursor.style.display='none';p.tap=_tap;
+  if(_tap&&!p.h&&CR.size&&(tool==='shower'||tool==='soap')){const cc=p.crew||crewHitAt(e);if(cc){washCrew(cc);return}}
+  if(tool==='hand'&&p.crew&&!p.h){rubAcc=0;if(_tap)tapPebi(e,p);return}
   if(tool==='hand'){
     if(p.mode==='hold'){releaseHold();return}
     if(p.mode==='pinch'){if(pinchT>1.2){setAnim('angry');S.fun=clamp(S.fun-4)}else{setAnim('hop');say('헤헤','happy');S.fun=clamp(S.fun+2)}renderUI();save();return}
     if(p.mode==='rub'){rubAcc=0;return}
-    if(p.moved<12){const ph=pebiHitAt(e,p.h);if(ph){openPebiCard(ph.id);return}}}
-  if(WALK&&(VENUE==='mart'||VENUE==='dept')&&tool==='hand'&&!p.h&&p.moved<12&&shopTap(e))return;
-  if(!WALK&&tool==='hand'&&!p.h&&p.moved<12&&!S.sleeping){const fi=furnHit(e);if(fi>=0){startUse(fi);return}}
-  if(VENUE!=='drive'&&tool==='hand'&&!p.h&&p.moved<12&&!S.sleeping){setRay(e);if(ray.ray.intersectPlane(floorPlane,_hp)&&(WALK?Math.hypot(_hp.x,_hp.z)<RR():!clampHome(_hp.clone())))walkTo(_hp.clone())}
+    if(_tap&&(p.pk||p.h)){tapPebi(e,p);return}}
+  if(WALK&&(VENUE==='mart'||VENUE==='dept')&&tool==='hand'&&!p.h&&p.tap&&shopTap(e))return;
+  if(!WALK&&tool==='hand'&&!p.h&&p.tap&&!S.sleeping){const fi=furnHit(e);if(fi>=0){startUse(fi);return}}
+  if(VENUE!=='drive'&&tool==='hand'&&!p.h&&p.tap&&!S.sleeping){setRay(e);if(ray.ray.intersectPlane(floorPlane,_hp)&&(WALK?Math.hypot(_hp.x,_hp.z)<RR():!clampHome(_hp.clone())))walkTo(_hp.clone())}
   if(VENUE==='drive'&&(tool==='bubble'||tool==='ball')){log('운전 중엔 못 해~');return}
-  if(tool==='bubble'&&p.moved<12){setRay(e);if(ray.ray.intersectPlane(floorPlane,_hp)&&Math.hypot(_hp.x,_hp.z)<RR()+0.2)blowBubbles(_hp.clone())}
-  if(tool==='ball'&&p.moved<12){setRay(e);if(ray.ray.intersectPlane(floorPlane,_hp)&&Math.hypot(_hp.x,_hp.z)<RR()+0.2)throwBall(_hp.clone())}
+  if(tool==='bubble'&&p.tap){setRay(e);if(ray.ray.intersectPlane(floorPlane,_hp)&&Math.hypot(_hp.x,_hp.z)<RR()+0.2)blowBubbles(_hp.clone())}
+  if(tool==='ball'&&p.tap){setRay(e);if(ray.ray.intersectPlane(floorPlane,_hp)&&Math.hypot(_hp.x,_hp.z)<RR()+0.2)throwBall(_hp.clone())}
   if(tool==='shower'&&showerT>0)showerT=Math.min(showerT,4)}
-cv.addEventListener('pointerup',endPtr,{capture:true});cv.addEventListener('pointercancel',endPtr,{capture:true});
+cv.addEventListener('pointerup',endPtr,{capture:true});addEventListener('pointerup',e=>TOUCHES.delete(e.pointerId));addEventListener('pointercancel',e=>TOUCHES.delete(e.pointerId));cv.addEventListener('pointercancel',endPtr,{capture:true});
 // 매 프레임 상호작용 처리
 let showerCool=0,dropAcc=0;
 function interactTick(dt){
@@ -1653,7 +1776,7 @@ function startWalk(m){if(WALK)return;m=m||'park';if(S.sleeping){say('쿨… (자
     log('땅을 톡 누르면 그쪽으로 걸어가 · 반짝이는 걸 주워와')})}
 function endWalk(after){if(!WALK){after&&after();return}
   fadeDo(()=>{leaveVenue();WALK=false;VENUE=null;park.visible=false;roomObjs.forEach(o=>o.visible=true);scene.fog=null;hemi.color.set(0xfff6ff);hemi.groundColor.set(0xd8ccff);
-    pet.position.set(-4.2,0,2.2);pet.rotation.y=Math.PI/2;controls.target.set(-4.2,0.75,2.2);camera.position.set(-3.2,2.1,7.2);controls.update();if(!VIEW_FOLLOW)shiftViewTarget(HOME_VIEW);walkGoal={type:'tap'};walkTarget=new THREE.Vector3(-2.4,0,1.6);
+    pet.position.set(-4.2,0,2.2);pet.rotation.y=Math.PI/2;controls.target.set(-4.2,0.75,2.2);camera.position.set(-3.2,2.1,7.2);controls.update();portraitFit();if(!VIEW_FOLLOW)shiftViewTarget(HOME_VIEW);walkGoal={type:'tap'};walkTarget=new THREE.Vector3(-2.4,0,1.6);
     sun.position.set(2.5,5,3);sun.target.position.set(0,0,0);sun.target.updateMatrixWorld();Object.assign(sun.shadow.camera,{left:-6.5,right:6.5,top:6.5,bottom:-6.5});sun.shadow.camera.updateProjectionMatrix();
     walkTarget=null;walkGoal=null;BF.on=false;bfly.visible=false;marker.visible=false;ball.visible=false;ballP.active=false;
     $('stage').classList.remove('outside','shop','drive','cherrydrive','nightdrive','sunsetdrive');sun.color.set(0xfff1e6);$('walkbtn').textContent='🚪 외출';setAnim('hop');say(pick(['다녀왔습니다~','재밌었다!','집이 최고야']),'happy');log('산책에서 돌아왔어');save();after&&setTimeout(after,300)})}
@@ -2375,10 +2498,10 @@ function crewBrain(c,dt){if(c.mode!=='free')return;c.wait-=dt;if(c.wait>0)return
   else if(em==='wave'){c.act={armUp:0.8};setTimeout(()=>c.act=null,1200)}if(Math.random()<0.35)cSay(c,pick(['헤헤','랄라~','피비!','뭐하지~',r.persona==='먹보야'?'배고픈데…':'놀자!']),'talk')}
 function cGain(c,x){const r=c.rec;r.exp=(r.exp||0)+x;const need=r.lv*30;if(r.exp<need)return;r.exp-=need;const st0=stageOf(r.lv);r.lv++;checkSchoolGraduation(r);c.happyT=2;c.g.scale.setScalar(stageSc(r.lv));
   if(stageOf(r.lv)!==st0){cSay(c,'나 '+STAGES[stageOf(r.lv)].nm+'가 됐어!');S.diary.push({d:Date.now(),t:r.name+'가 '+STAGES[stageOf(r.lv)].nm+'가 됐어'});toast(STAGES[stageOf(r.lv)].emo+' '+r.name+'가 '+STAGES[stageOf(r.lv)].nm+'가 됐어!')}
-  else toast('🎉 '+r.name+' Lv.'+r.lv+'!');if(r.lv>=30)setTimeout(()=>farewell(r,false),1500);renderUI()}
+  else toast('🎉 '+r.name+' Lv.'+r.lv+'! +'+won(500*r.lv));S.money+=500*r.lv;fx('🎉',3);if(r.lv>=30)setTimeout(()=>farewell(r,false),1500);renderUI()}
 function gainPebi(r,x){if(!r||x<=0)return;if(r===S){gain(x);return}const c=CR.get(r.id);if(c){cGain(c,x);return}r.exp=(r.exp||0)+x;while(r.lv<30&&r.exp>=r.lv*30){r.exp-=r.lv*30;r.lv++;checkSchoolGraduation(r)}if(r.lv>=30)setTimeout(()=>farewell(r,false),1500);renderUI();save()}
-function crewNeeds(sec,sl){for(const r of S.crew){r.food=clamp(r.food-sec*(sl?0.02:0.05));r.clean=clamp(r.clean-sec*(sl?0.01:0.03));r.fun=clamp(r.fun-sec*(sl?0.01:0.04));r.energy=clamp((r.energy||80)+sec*(sl?0.4:-0.03));r.potty=clamp((r.potty??20)+sec*(sl?0.012:0.045));if(r.sick&&!sl){r.energy=clamp(r.energy-sec*(r.sick.days>=3?0.045:0.018));r.fun=clamp(r.fun-sec*0.01)}
-    if(!sl&&(r.food<20||r.fun<15||r.clean<15))r.love=clamp(r.love-sec*0.004);if(!sl&&sec<=2&&Math.random()<sec/90){const c=CR.get(r.id);c&&cGain(c,1)}}}
+function crewNeeds(sec,sl){for(const r of S.crew){r.food=clamp(r.food-sec*(sl?0.02:0.05));r.clean=clamp(r.clean-sec*(sl?0.01:0.035));{let fl=sl?0.01:0.045;if(r.food<20||r.clean<20)fl*=2;r.fun=clamp(r.fun-sec*fl)}r.energy=clamp((r.energy||80)+sec*(sl?0.4:-0.04));r.potty=clamp((r.potty??20)+sec*(sl?0.012:0.05));if(r.sick&&!sl){r.energy=clamp(r.energy-sec*(r.sick.days>=3?0.045:0.018));r.fun=clamp(r.fun-sec*0.01)}
+    if(!sl&&(r.food<20||r.fun<20||r.clean<20))r.love=Math.max(0,r.love-sec*0.004);if(!sl&&sec<=2&&Math.random()<sec/90){const c=CR.get(r.id);c&&cGain(c,1)}}}
 // ---- 사용자와 상호작용 ----
 function crewHitAt(e){setRay(e);let best=null,bd=1e9;for(const c of CR.values()){if(!c.g.visible)continue;const h=ray.intersectObject(c.hit)[0];if(h&&h.distance<bd){bd=h.distance;best=c}}return best}
 function pebiHitAt(e,mainHit=null){setRay(e);let best=mainHit&&pet.visible?{id:S.id,d:mainHit.distance}:null;for(const c of CR.values()){if(!c.g.visible)continue;const h=ray.intersectObject(c.hit)[0];if(h&&(!best||h.distance<best.d))best={id:c.rec.id,d:h.distance}}return best}
@@ -2388,14 +2511,15 @@ function feedCrew(c,ch){const f=FOODS[ch],r=c.rec;if(!f)return;if(ch!=='🍙'&&!
   if(ch!=='🍙'){S.inv[ch]--;if(!S.inv[ch])delete S.inv[ch];renderTray()}if(f.spicy){c.cryT=3;cSay(c,'매워!! 으앵','cry');r.love=clamp(r.love-3);renderUI();return}
   r.food=clamp(r.food+f.food);r.fun=clamp(r.fun+Math.max(1,f.fun||0));r.love=clamp(r.love+(ch===r.fav?3:f.lux?2.5:0.8));c.eatT=2.2;c.cryT=0;cGain(c,2);cSay(c,ch===r.fav?'내가 제일 좋아하는 거!!':pick(f.line||['냠냠']));if(ch===r.fav)cEmo(c,'star',1.5);renderUI();save()}
 function washCrew(c){c.rec.clean=100;c.rec.fun=clamp(c.rec.fun+2);c.happyT=1;cSay(c,'뽀송뽀송~');fx('🫧',3);renderUI();save()}
-// ---- 대표 피비 바꾸기 ----
-function swapMain(i){const r=S.crew[i];if(!r)return;const c=CR.get(r.id);const tmp={};for(const k of PF){tmp[k]=S[k];S[k]=r[k]}for(const k of PF)r[k]=tmp[k];
+// ---- 지금 돌보는 피비 전환 (내부용 · 모두 동등) ----
+function swapMain(i,quiet){const r=S.crew[i];if(!r)return;const c=CR.get(r.id);const tmp={};for(const k of PF){tmp[k]=S[k];S[k]=r[k]}for(const k of PF)r[k]=tmp[k];
   CR.delete(S.id);CR.set(r.id,c);c.rec=r;
   const pp=pet.position.clone(),pr=pet.rotation.y;pet.position.copy(c.g.position);pet.rotation.y=c.g.rotation.y;c.g.position.copy(pp);c.g.rotation.y=pr;
   nameTag(c,r.color+' '+r.name);if(c.accS){scene.remove(c.accS);c.accS=null}if(r.acc&&ACCS[r.acc]){c.accS=sprite(ACCS[r.acc].ch,ACCS[r.acc].s);scene.add(c.accS)}setAcc(S.acc||0);
-  curSc=stageSc(S.lv);mainTag();walkTarget=null;setAnim('hop',true);say(pick(['나랑 놀자!','내 차례다~','헤헤']),'happy');renderUI();renderTray();save()}
-let mainTagS=null;function mainTag(){if(mainTagS)scene.remove(mainTagS);mainTagS=textSprite('👑 '+(S.color||'')+' '+S.name,1.0,{size:40,bg:'#ffd6e8ee',fg:'#3b2f63'});mainTagS.renderOrder=3;scene.add(mainTagS)}
-function mainTagTick(){if(!mainTagS)return;const show=S.crew.length>0&&VENUE!=='toy'&&!isAtSchool(S)&&!(S.sleeping&&!WALK);mainTagS.visible=show;if(!show)return;const sc=pet.scale.x;mainTagS.position.set(pet.position.x,pet.position.y+(C.lie>0.5?0.75:1.5)*sc+0.15+body.position.y*sc*0.5,pet.position.z);mainTagS.scale.set(1.0*Math.max(0.8,sc),0.31*Math.max(0.8,sc),1)}
+  curSc=stageSc(S.lv);mainTag();walkTarget=null;if(!quiet){setAnim('hop',true);say(pick(['나랑 놀자!','헤헤']),'happy')}else setAnim('idle',true);renderUI();renderTray();save()}
+function focusPebi(id){if(!id||id===S.id)return;const i=S.crew.findIndex(x=>x.id===id);if(i<0)return;const c=CR.get(id);if(!c||!crewFree(c)||S.sleeping||WALK||USE||EDIT||MAINPAIR||phys.held||phys.falling||isAtSchool(S)||(VENUE&&VENUE!=='home'))return;swapMain(i,true)}
+let mainTagS=null;function mainTag(){if(mainTagS)scene.remove(mainTagS);mainTagS=textSprite((S.color||'')+' '+S.name,0.9,{size:40,bg:'#ffffffcc',fg:'#3b2f63'});mainTagS.renderOrder=3;scene.add(mainTagS)}
+function mainTagTick(){if(!mainTagS)return;const show=S.crew.length>0&&VENUE!=='toy'&&!isAtSchool(S)&&!(S.sleeping&&!WALK);mainTagS.visible=show;if(!show)return;const sc=pet.scale.x;mainTagS.position.set(pet.position.x,pet.position.y+(C.lie>0.5?0.75:1.5)*sc+0.15+body.position.y*sc*0.5,pet.position.z);mainTagS.scale.set(0.9*Math.max(0.8,sc),0.28*Math.max(0.8,sc),1)}
 
 /* ================= 💞 피비끼리 놀기 ================= */
 let MAINPAIR=null;const pairBall=sprite('🏐',0.3);pairBall.visible=false;scene.add(pairBall);const pairProp=sprite('🌷',0.32);pairProp.visible=false;scene.add(pairProp);
@@ -2570,7 +2694,7 @@ function toyTick(dt){if(!TOY)return;for(const c of TOY.cands){const sel=TOY.sel.
     crewPose(c,dt,sel?Math.abs(Math.sin(T*4))*0.07:Math.abs(Math.sin(T*2+c.ph))*.012,0,{},false);crewFace(c,dt,false);c.tag.position.set(c.g.position.x,c.g.position.y+1.17,c.g.position.z);c.tag.scale.set(0.68,0.21,1);
     if(c.sayT>0){c.sayT-=dt;const hp=toScreen(c.g.position.clone().add(new THREE.Vector3(0,1.05,0)));c.bub.style.left=hp.x+'px';c.bub.style.top=hp.y+'px';if(c.sayT<=0)c.bub.classList.remove('show')}
     if(Math.random()<dt*0.055)cSay(c,pick(['삐약… 아니 피비!','나랑 갈래?','츄비?','여기 따뜻해~','나 골라줘!']),'talk')}}
-function toyTap(e){if(!TOY)return false;setRay(e);let hit=null;for(const c of TOY.cands){if(ray.intersectObject(c.hit)[0]){hit=c;break}}if(!hit)return true;
+function toyTap(e){if(!TOY)return false;const tc=pebiScreenCands(e,TOY.cands.filter(c=>c.g.visible).map(c=>({id:c.rec.id,g:c.g,sc:c.g.scale.x,c})));let hit=null;if(tc.length){const ins=nearPebis(tc).sort((a,b)=>a.depth-b.depth);hit=(ins[0]||tc[0]).c}if(!hit)return true;
   const lim=HOUSES[S.house||0].cap;
   if(TOY.sel.has(hit)){TOY.sel.delete(hit);cSay(hit,'삐…','sulk')}else{if(TOY.sel.size>=lim){toast('처음 집에는 '+lim+'마리까지만 함께 갈 수 있어');return true}TOY.sel.add(hit);hit.happyT=1.4;cSay(hit,pick(['나야? 정말?','같이 가자!','헤헤 좋아~']))}
   toast(hit.rec.color+' '+hit.rec.name+' · 성격: '+hit.rec.persona,1800);renderAdopt();return true}
@@ -2587,7 +2711,7 @@ function farewell(rec,isMain,reason='age'){const nm=isMain?S.name:rec.name,born=
   const why=reason==='sick'?'병이 오래 낫지 않아 많이 약해졌어':'나이가 들어 편안하게 잠들었어',lvTxt=reason==='sick'?'게임 안에서 제때 치료가 필요했어':'Lv.30';
   const ov=$('evo');ov.innerHTML=`<div class="evo-card"><div class="evo-em">🌈</div><b>${nm}가 무지개 다리를 건넜어</b><div class="evo-l">${days}일 동안 함께했어 · ${lvTxt}<br>${why}</div><div class="evo-say">"${love>=60?'나랑 놀아줘서 정말 고마웠어 💕':love>=30?'함께해서 즐거웠어…':'…그래도 좋았어'}"</div><button id="evo-ok">잘 가…</button></div>`;ov.classList.add('show');
   $('evo-ok').onclick=()=>{ov.classList.remove('show');S.memorial=S.memorial||[];S.memorial.push({name:nm,days,died:Date.now(),color:isMain?S.color:rec.color});S.diary.push({d:Date.now(),t:'🌈 '+nm+'와 이별했어 ('+days+'일)'});
-    if(isMain){if(S.crew.length){swapMain(0);const r=S.crew[0];dropClone(CR.get(r.id));CR.delete(r.id);S.crew.splice(0,1)}else{S.adopted=false;save();const go=()=>{pet.visible=false;setTimeout(()=>openToyShop(true),600)};if(WALK)endWalk(go);else go();return}}
+    if(isMain){if(S.crew.length){swapMain(0,true);const r=S.crew[0];dropClone(CR.get(r.id));CR.delete(r.id);S.crew.splice(0,1)}else{S.adopted=false;save();const go=()=>{pet.visible=false;setTimeout(()=>openToyShop(true),600)};if(WALK)endWalk(go);else go();return}}
     else{dropClone(CR.get(rec.id));CR.delete(rec.id);S.crew=S.crew.filter(r=>r!==rec)}
     for(const c of CR.values()){c.cryT=4;cSay(c,pick(['흑흑…','보고 싶을 거야…']),'cry')}if(!S.sleeping){setAnim('cry',true);say('…보고 싶을 거야','cry')}crewBeds();renderUI();save()}}
 // ---- 아기 탄생 ----
@@ -2598,8 +2722,12 @@ function birth(par){const isMain=par==='main',pn=isMain?S.name:par.name,pid=isMa
   ov.classList.add('show');$('evo-ok').onclick=()=>{const n=$('bb-name').value.trim();if(n){r.name=n.slice(0,12);c&&nameTag(c,r.color+' '+r.name)}ov.classList.remove('show');c&&cSay(c,'마마!');if(isMain)say('우리 '+r.name+'!','happy');else{const pc=CR.get(pid);pc&&cSay(pc,'우리 아기야~!')}renderUI();save()}}
 // ---- 👥 피비 목록 / 🏠 집 넓히기 ----
 function renderCrewBar(){const el=$('bstat');if(!S.crew.length){el.innerHTML=`<b id="cb-open">👥 피비 ${petCount()}/${houseCap()}</b><span class="hint2">Lv.15 이후 아기 피비가 태어나면 가족이 늘어나</span>`;el.classList.add('show');$('cb-open').onclick=openCrew;return}
-  el.classList.add('show');el.innerHTML=`<b id="cb-open">👥 ${petCount()}/${houseCap()}</b>`+S.crew.map((r,i)=>{const st=r.sick?'🤒':r.food<25||r.fun<20||r.clean<20?'😢':r.love<25?'😤':'😊';return `<button class="chip" data-i="${i}">${r.color}${r.name} <i>Lv.${r.lv}</i>${st}</button>`}).join('');
-  $('cb-open').onclick=openCrew;el.querySelectorAll('.chip').forEach(b=>b.onclick=()=>openCrewCard(+b.dataset.i))}
+  el.classList.add('show');el.innerHTML=`<b id="cb-open">👥 ${petCount()}/${houseCap()}</b>`+allPebis().map(r=>`<button class="chip${r.id===selectedPebiId?' cur':''}" data-id="${r.id}">${r.color||''}${r.name} <i>Lv.${r.lv}</i>${pebiMoodIcon(r)}</button>`).join('');
+  $('cb-open').onclick=openCrew;el.querySelectorAll('.chip').forEach(b=>b.onclick=()=>openPebiCard(b.dataset.id))}
+function allPebis(){return [S,...S.crew].filter(r=>r&&r.id).sort((a,b)=>(a.born||0)-(b.born||0)||String(a.id).localeCompare(String(b.id)))}
+function pebiMoodIcon(r){return isAtSchool(r)?'🏫':r.sick?'🤒':r.food<25||r.fun<20||r.clean<20?'😢':r.love<25?'😤':'😊'}
+function careAll(k){let n=0;for(const r of allPebis()){if(isAtSchool(r))continue;if(r===S){if(k==='feed'){if(S.food<95){feedFood('🍙');n++}}else if(k==='pat'){pat();n++}else{S.clean=100;S.fun=clamp(S.fun+2);n++}}else{const c=CR.get(r.id);if(!c)continue;if(k==='feed'){if(r.food<95){feedCrew(c,'🍙');n++}}else if(k==='pat'){patCrew(c);n++}else{washCrew(c);n++}}}
+  fx(k==='feed'?'🍙':k==='pat'?'💗':'🫧',Math.min(8,2+n));toast(n?({feed:'🍙 ',pat:'🤲 ',wash:'🫧 '}[k])+n+'마리 모두 챙겼어':'지금은 챙길 피비가 없어');renderUI();save()}
 function bestFriend(id){let best=null,bv=-1;const all=[{id:S.id,name:S.name},...S.crew.map(r=>({id:r.id,name:r.name}))];for(const o of all){if(o.id===id)continue;const v=rel(id,o.id);if(v>bv){bv=v;best=o}}return best&&bv>35?best.name+' ('+Math.round(bv)+')':'아직 없어'}
 function bar(v,c){return `<div class="bar"><i style="width:${Math.round(v)}%;background:${c}"></i></div>`}
 const pebiRing=new THREE.Mesh(new THREE.RingGeometry(0.54,0.68,48),new THREE.MeshBasicMaterial({color:0xff6fa9,transparent:true,opacity:0.82,side:THREE.DoubleSide,depthWrite:false}));pebiRing.rotation.x=-Math.PI/2;pebiRing.position.y=0.028;pebiRing.visible=false;pebiRing.renderOrder=4;scene.add(pebiRing);
@@ -2608,29 +2736,30 @@ function pebiRef(id){if(id===S.id)return{r:S,main:true,i:-1,c:null};const i=S.cr
 function familyName(id){if(!id)return'없음';if(id===S.id)return S.name;const r=S.crew.find(x=>x.id===id);return r?r.name:'기록 없음'}
 function childNames(id){const all=[S,...S.crew],a=all.filter(x=>x.parentId===id).map(x=>x.name);return a.length?a.join(', '):'없음'}
 function healthLabel(r){if(!r.sick)return'💚 건강함';const d=r.sick.days||0,st=d>=3?' · ⚠️ 위험':d>=2?' · 많이 아픔':' · 초기';const med=r.sick.meds?' · 💊 약 '+r.sick.meds+'회분':'';return '🤒 '+(r.sick.type||'아픈 상태')+st+med}
-function selectPebi(id){selectedPebiId=id;selectionTick()}
+function selectPebi(id){const ch=selectedPebiId!==id;selectedPebiId=id;selectionTick();if(ch&&S.crew)try{renderCrewBar()}catch(_){}}
 function selectionTick(){if(!selectedPebiId||WALK||VENUE==='drive'||VENUE==='toy'){pebiRing.visible=false;return}const q=pebiRef(selectedPebiId);if(!q){selectedPebiId=null;pebiRing.visible=false;return}const g=q.main?pet:q.c&&q.c.g;if(!g||!g.visible){pebiRing.visible=false;return}const sc=q.main?pet.scale.x:g.scale.x;pebiRing.visible=true;pebiRing.position.set(g.position.x,0.028,g.position.z);const pulse=1+Math.sin(T*4)*0.05;pebiRing.scale.setScalar(Math.max(.78,sc)*pulse)}
-function openPebiCard(id){const q=pebiRef(id);if(!q)return;const r=q.r;selectPebi(id);const par=familyName(r.parentId),kids=childNames(r.id),main=q.main;
-  $('bookcard').innerHTML=`<h2>${main?'👑 ':''}${r.color||''} ${r.name}</h2><div class="bk-top"><b>성장</b><span>${STAGES[stageOf(r.lv)].emo} ${STAGES[stageOf(r.lv)].nm} · Lv.${r.lv}</span><b>성격</b><span>${r.persona||'-'}</span><b>단짝</b><span>${bestFriend(r.id)}</span><b>부모</b><span>${par}</span><b>자식</b><span>${kids}</span><b>병 상태</b><span>${healthLabel(r)}</span>
+function openPebiCard(id){window.__pebiCloseSheets&&window.__pebiCloseSheets();hideWho();focusPebi(id);const q=pebiRef(id);if(!q)return;const r=q.r;selectPebi(id);const par=familyName(r.parentId),kids=childNames(r.id),main=q.main;
+  $('bookcard').innerHTML=`<h2>${r.color||''} ${r.name}</h2><div class="bk-top"><b>성장</b><span>${STAGES[stageOf(r.lv)].emo} ${STAGES[stageOf(r.lv)].nm} · Lv.${r.lv}</span><b>성격</b><span>${r.persona||'-'}</span><b>단짝</b><span>${bestFriend(r.id)}</span><b>부모</b><span>${par}</span><b>자식</b><span>${kids}</span><b>병 상태</b><span>${healthLabel(r)}</span>
   <b>경험치</b><span>${Math.floor(r.exp||0)} / ${r.lv*30}</span><b>학교</b><span>${schoolStatus(r)}</span><b>배부름</b>${bar(r.food,'var(--food)')}<b>기분</b>${bar(r.fun,'var(--fun)')}<b>청결</b>${bar(r.clean,'var(--clean)')}<b>에너지</b>${bar(r.energy==null?80:r.energy,'var(--sleep)')}<b>🚽 용변</b>${bar(r.potty==null?20:r.potty,'#c99b6b')}<b>호감도</b>${bar(r.love,'#ff5c8a')}</div>
   <div class="msub">선택된 피비 발밑에 분홍 링이 표시돼</div>
   <div class="bk-row"><button id="cc-feed">🍙 먹이 주기</button><button id="cc-wash">🫧 씻기기</button><button id="cc-pat">💗 쓰다듬기</button></div>
-  <div class="bk-row"><button id="cc-play" ${petCount()<2||WALK||USE||isAtSchool(r)?'disabled':''}>💞 같이 놀기</button><button id="cc-main" ${main||WALK||USE||isAtSchool(r)?'disabled':''}>${main?'👑 현재 대표':'👑 대표로 바꾸기'}</button><button id="cc-name">✏️ 이름 바꾸기</button></div><button class="jbtn" id="cc-school">🏫 학교 기록 보기</button>${r.sick&&r.sick.meds?`<button class="jbtn" id="cc-med" ${r.sick.lastMedDay===(S.gameDay||1)?'disabled':''}>💊 약 먹이기 ${r.sick.doses||0}/3 ${r.sick.lastMedDay===(S.gameDay||1)?'· 오늘 복용 완료':''}</button>`:''}<button class="mclose" id="bk-x">닫기</button>`;$('book').classList.add('show');
+  <div class="bk-row"><button id="cc-play" ${petCount()<2||WALK||USE||isAtSchool(r)?'disabled':''}>💞 같이 놀기</button><button id="cc-name">✏️ 이름 바꾸기</button></div><button class="jbtn" id="cc-school">🏫 학교 기록 보기</button>${r.sick&&r.sick.meds?`<button class="jbtn" id="cc-med" ${r.sick.lastMedDay===(S.gameDay||1)?'disabled':''}>💊 약 먹이기 ${r.sick.doses||0}/3 ${r.sick.lastMedDay===(S.gameDay||1)?'· 오늘 복용 완료':''}</button>`:''}<button class="mclose" id="bk-x">닫기</button>`;$('book').classList.add('show');
   $('bk-x').onclick=()=>$('book').classList.remove('show');
   $('cc-feed').onclick=()=>{const x=pebiRef(id);if(!x)return;if(x.main)feedFood('🍙');else if(x.c)feedCrew(x.c,'🍙');openPebiCard(id)};
   $('cc-wash').onclick=()=>{const x=pebiRef(id);if(!x)return;if(x.main)act('wash');else if(x.c)washCrew(x.c);openPebiCard(id)};
   $('cc-pat').onclick=()=>{const x=pebiRef(id);if(!x)return;if(x.main)pat();else if(x.c)patCrew(x.c);openPebiCard(id)};
   $('cc-play').onclick=()=>{const x=pebiRef(id);if(!x||petCount()<2||WALK||USE)return;let ok=false;if(x.main){const cs=[...CR.values()].filter(crewFree);if(cs.length)ok=startPair('main',null,pick(cs))}else if(x.c){ok=startPair(x.c)}if(ok)$('book').classList.remove('show');else toast('지금은 같이 놀기 어려워~')};
-  $('cc-main').onclick=()=>{const x=pebiRef(id);if(!x||x.main||WALK||USE)return;swapMain(x.i);openPebiCard(id)};
   if($('cc-med'))$('cc-med').onclick=()=>{const x=pebiRef(id);if(x)takeMedicine(x.r);openPebiCard(id)};
   $('cc-name').onclick=()=>{const x=pebiRef(id);if(!x)return;const n=prompt('이름',x.r.name);if(n&&n.trim()){x.r.name=n.trim().slice(0,12);if(x.main){mainTag();}else{x.c&&nameTag(x.c,x.r.color+' '+x.r.name)}save();renderUI();openPebiCard(id)}};if($('cc-school'))$('cc-school').onclick=()=>{ $('book').classList.remove('show');openSchool(id)}}
 function openCrewCard(i){const r=S.crew[i];if(r)openPebiCard(r.id)}
 function openCrew(){const H=HOUSES[S.house||0],nx=HOUSES[(S.house||0)+1];
   $('bookcard').innerHTML=`<h2>👥 우리 피비들</h2><div class="bk-top"><b>집</b><span>🏠 ${H.nm} · ${petCount()}/${H.cap}마리</span></div>
-  <div class="bk-list"><div data-id="${S.id}" class="crow">👑 ${S.color||''} ${S.name} · Lv.${S.lv} · ${S.persona||''} · 단짝 ${bestFriend(S.id)}</div>${S.crew.map(r=>`<div data-id="${r.id}" class="crow">${r.color} ${r.name} · Lv.${r.lv} · ${r.persona||''}</div>`).join('')}</div>
+  <div class="bk-list">${allPebis().map(r=>`<div data-id="${r.id}" class="crow">${r.color||''} ${r.name} · Lv.${r.lv} · ${r.persona||''} · ${pebiMoodIcon(r)} · 단짝 ${bestFriend(r.id)}</div>`).join('')}</div>
+  ${petCount()>1?`<div class="bk-sec">🤝 다같이 돌보기</div><div class="bk-row"><button id="ca-feed">🍙 다같이 밥</button><button id="ca-pat">🤲 다같이 쓰담</button><button id="ca-wash">🫧 다같이 씻기</button></div>`:''}
   ${nx?`<button class="jbtn" id="cr-house" ${S.money<nx.pr?'disabled':''}>🏠 ${nx.nm}로 넓히기 (${won(nx.pr)} · 최대 ${nx.cap}마리 · 새 방 해금)</button>`:'<div class="msub">가장 큰 집이야!</div>'}
   <div class="bk-sec">🌈 추억</div><div class="bk-list">${(S.memorial||[]).map(m=>`<div>${m.color||''} ${m.name} · ${m.days}일 함께함</div>`).join('')||'<div>-</div>'}</div><button class="mclose" id="bk-x">닫기</button>`;$('book').classList.add('show');
   $('bk-x').onclick=()=>$('book').classList.remove('show');$('bookcard').querySelectorAll('.crow[data-id]').forEach(d=>d.onclick=()=>openPebiCard(d.dataset.id));
+  for(const k of['feed','pat','wash'])if($('ca-'+k))$('ca-'+k).onclick=()=>{careAll(k);openCrew()};
   if($('cr-house'))$('cr-house').onclick=()=>{if(WALK)return;const nx2=HOUSES[(S.house||0)+1];if(!nx2||S.money<nx2.pr)return;S.money-=nx2.pr;S.house=(S.house||0)+1;ensureDecorState();buildHouse(S.house);renderFurn();$('book').classList.remove('show');fx('🎉',6);
     const rn=ROOM_META[Math.min(S.house,ROOM_META.length-1)];say('집이 넓어졌다~!!','happy');for(const c of CR.values()){c.happyT=2}addDiary('house'+S.house,'🏠 '+nx2.nm+'로 이사했어!');toast('🔓 새 방 해금 · '+rn[0]+' '+rn[1],3400);renderUI();save()}}
 
@@ -2658,10 +2787,10 @@ const HOMEWORKS=[
  {q:'“기쁘다”와 뜻이 가까운 말은?',a:['즐겁다','무겁다','어둡다'],ok:0,sub:'kor'}
 ];
 function startHomework(id){const q=pebiRef(id);if(!q)return;const r=q.r,sc=ensureSchool(r);if(r.lv<4||r.lv>10||sc.graduated){toast('📚 지금은 숙제할 학년이 아니야');return}if(isAtSchool(r)){toast('🏫 수업 끝나고 집에서 숙제하자');return}if(sc.studyDay===(S.gameDay||1)){toast('✏️ 오늘 숙제는 이미 끝냈어');return}const hw=pick(HOMEWORKS);$('bookcard').innerHTML=`<h2>✏️ ${r.name} 숙제 도와주기</h2><div class="jq">${hw.q}</div><div class="bk-row">${hw.a.map((a,i)=>`<button class="hw-a" data-i="${i}">${a}</button>`).join('')}</div><div class="msub">하루에 한 번 · 맞히면 다음 수업 집중 보너스</div><button class="mclose" id="bk-x">그만하기</button>`;$('book').classList.add('show');$('bk-x').onclick=()=>openSchool(r.id);$('bookcard').querySelectorAll('.hw-a').forEach(b=>b.onclick=()=>{sc.studyDay=S.gameDay||1;const ok=+b.dataset.i===hw.ok;if(ok){sc.studyBoost=2;sc.subjects[hw.sub]=Math.min(100,sc.subjects[hw.sub]+2);r.love=clamp((r.love||40)+1);gainPebi(r,2);toast('✅ 정답! '+SCHOOL_SUBS[hw.sub][0]+' +2 · 다음 수업 집중 보너스')}else{sc.studyBoost=1;toast('🙂 아깝다! 그래도 같이 공부해서 다음 수업에 도움돼')}save();openSchool(r.id)})}
-function openSchool(focusId){for(const q of allPebiRefs())ensureSchool(q.r);const refs=allPebiRefs(),m=S.gameMinute||0;let intro=m<420?'아직 등교 전이야 · 07:00부터':m<=630?'지금 등교 가능 · 10:30까지':m<930?'수업 시간 · 오늘 새 등교는 마감':'오늘 수업 끝 · 내일 다시 와';$('bookcard').innerHTML=`<h2>🏫 피비 학교</h2><div class="msub">${intro}<br>Lv.4부터 다니고 Lv.10까지만 재학 · Lv.11이 되면 자동 졸업해.</div>${refs.map(q=>{const r=q.r,sc=ensureSchool(r),away=isAtSchool(r),grad=sc.graduated||r.lv>=11,cls=away?'away':grad?'grad':'';const dis=!schoolCanAttend(r);let btn='';if(r.lv>=4&&!grad){btn=`<div class="school-actions"><button class="small sch-go" data-id="${r.id}" ${dis?'disabled':''}>${away?'🏫 수업 중':sc.lastAttendDay===(S.gameDay||1)?'✅ 오늘 출석 완료':'🎒 등교시키기'}</button><button class="small sch-hw" data-id="${r.id}" ${away||sc.studyDay===(S.gameDay||1)?'disabled':''}>✏️ ${sc.studyDay===(S.gameDay||1)?'오늘 숙제 완료':'숙제 도와주기'}</button></div>`}return `<div class="school-note ${cls}" ${focusId===r.id?'style="outline:2px solid var(--fun)"':''}><b>${q.main?'👑 ':''}${r.color||''} ${r.name} · Lv.${r.lv}</b><br>${schoolStatus(r)}${schoolSubjectHtml(r)}${schoolReportHtml(r)}${btn}</div>`}).join('')}<button class="mclose" id="bk-x">집으로</button>`;$('book').classList.add('show');$('bk-x').onclick=()=>$('book').classList.remove('show');$('bookcard').querySelectorAll('.sch-go').forEach(b=>b.onclick=()=>{const q=pebiRef(b.dataset.id);if(q)sendSchool(q.r)});$('bookcard').querySelectorAll('.sch-hw').forEach(b=>b.onclick=()=>startHomework(b.dataset.id))}
+function openSchool(focusId){for(const q of allPebiRefs())ensureSchool(q.r);const refs=allPebiRefs(),m=S.gameMinute||0;let intro=m<420?'아직 등교 전이야 · 07:00부터':m<=630?'지금 등교 가능 · 10:30까지':m<930?'수업 시간 · 오늘 새 등교는 마감':'오늘 수업 끝 · 내일 다시 와';$('bookcard').innerHTML=`<h2>🏫 피비 학교</h2><div class="msub">${intro}<br>Lv.4부터 다니고 Lv.10까지만 재학 · Lv.11이 되면 자동 졸업해.</div>${refs.map(q=>{const r=q.r,sc=ensureSchool(r),away=isAtSchool(r),grad=sc.graduated||r.lv>=11,cls=away?'away':grad?'grad':'';const dis=!schoolCanAttend(r);let btn='';if(r.lv>=4&&!grad){btn=`<div class="school-actions"><button class="small sch-go" data-id="${r.id}" ${dis?'disabled':''}>${away?'🏫 수업 중':sc.lastAttendDay===(S.gameDay||1)?'✅ 오늘 출석 완료':'🎒 등교시키기'}</button><button class="small sch-hw" data-id="${r.id}" ${away||sc.studyDay===(S.gameDay||1)?'disabled':''}>✏️ ${sc.studyDay===(S.gameDay||1)?'오늘 숙제 완료':'숙제 도와주기'}</button></div>`}return `<div class="school-note ${cls}" ${focusId===r.id?'style="outline:2px solid var(--fun)"':''}><b>${r.color||''} ${r.name} · Lv.${r.lv}</b><br>${schoolStatus(r)}${schoolSubjectHtml(r)}${schoolReportHtml(r)}${btn}</div>`}).join('')}<button class="mclose" id="bk-x">집으로</button>`;$('book').classList.add('show');$('bk-x').onclick=()=>$('book').classList.remove('show');$('bookcard').querySelectorAll('.sch-go').forEach(b=>b.onclick=()=>{const q=pebiRef(b.dataset.id);if(q)sendSchool(q.r)});$('bookcard').querySelectorAll('.sch-hw').forEach(b=>b.onclick=()=>startHomework(b.dataset.id))}
 
 /* ================= 🏥 동물병원 ================= */
-function openHospital(){const c=$('hospitalcard'),sick=allPebiRefs().filter(q=>q.r.sick);c.innerHTML=`<h2>🏥 동네 피비 동물병원</h2><div class="msub">진찰 + 3일치 약 1,200원 · 약은 게임 하루에 한 번씩 먹여줘</div>${sick.length?sick.map(q=>{const r=q.r;return `<div class="sick-note"><b>${q.main?'👑 ':''}${r.color||''} ${r.name}</b><br>${healthLabel(r)}<br><button class="small h-treat" data-id="${r.id}" ${r.sick&&r.sick.meds?'disabled':''}>${r.sick&&r.sick.meds?'💊 처방 완료':'🩺 진찰 + 약 받기 · 1,200원'}</button></div>`}).join(''):'<div class="healthy-note">💚 지금은 아픈 피비가 없어. 모두 건강해!</div>'}<button class="mclose" id="h-x">집으로</button>`;$('hospital').classList.add('show');$('h-x').onclick=()=>$('hospital').classList.remove('show');c.querySelectorAll('.h-treat').forEach(b=>b.onclick=()=>{const q=pebiRef(b.dataset.id);if(!q||!q.r.sick||q.r.sick.meds)return;if(S.money<1200){toast('돈이 부족해 · 진찰과 약은 1,200원이야');return}S.money-=1200;q.r.sick.diagnosed=true;q.r.sick.meds=3;q.r.sick.doses=0;toast('🩺 '+q.r.name+' 진찰 완료 · 3일치 약을 받았어');addDiary('clinic_'+q.r.id+'_'+(S.gameDay||1),'🏥 '+q.r.name+'가 병원에서 진찰받았어');save();renderUI();openHospital()})}
+function openHospital(){const c=$('hospitalcard'),sick=allPebiRefs().filter(q=>q.r.sick);c.innerHTML=`<h2>🏥 동네 피비 동물병원</h2><div class="msub">진찰 + 3일치 약 1,200원 · 약은 게임 하루에 한 번씩 먹여줘</div>${sick.length?sick.map(q=>{const r=q.r;return `<div class="sick-note"><b>${r.color||''} ${r.name}</b><br>${healthLabel(r)}<br><button class="small h-treat" data-id="${r.id}" ${r.sick&&r.sick.meds?'disabled':''}>${r.sick&&r.sick.meds?'💊 처방 완료':'🩺 진찰 + 약 받기 · 1,200원'}</button></div>`}).join(''):'<div class="healthy-note">💚 지금은 아픈 피비가 없어. 모두 건강해!</div>'}<button class="mclose" id="h-x">집으로</button>`;$('hospital').classList.add('show');$('h-x').onclick=()=>$('hospital').classList.remove('show');c.querySelectorAll('.h-treat').forEach(b=>b.onclick=()=>{const q=pebiRef(b.dataset.id);if(!q||!q.r.sick||q.r.sick.meds)return;if(S.money<1200){toast('돈이 부족해 · 진찰과 약은 1,200원이야');return}S.money-=1200;q.r.sick.diagnosed=true;q.r.sick.meds=3;q.r.sick.doses=0;toast('🩺 '+q.r.name+' 진찰 완료 · 3일치 약을 받았어');addDiary('clinic_'+q.r.id+'_'+(S.gameDay||1),'🏥 '+q.r.name+'가 병원에서 진찰받았어');save();renderUI();openHospital()})}
 
 /* ================= 알바 ================= */
 let JOB=null;
@@ -2702,7 +2831,8 @@ function endJob(){if(!JOB)return;clearInterval(JOB.timer);const bonus=stageOf(S.
 function autoCareMainTick(dt){if(!S.adopted||WALK||EDIT||S.sleeping||USE||MAINPAIR||isAtSchool(S))return;AUTO_MAIN_CD-=dt;if(AUTO_MAIN_CD>0)return;AUTO_MAIN_CD=1.4+Math.random()*1.2;const kind=careNeed(S);if(!kind)return;const i=careIndex(kind);if(i<0)return;startUse(i,true,kind)}
 function pottyAccidentTick(sec){if(!S.adopted||hasBathroom())return;for(const q of allPebiRefs()){const r=q.r;ensureCare(r);if(r.potty<100||isAtSchool(r)) {r.pottyWait=0;continue}r.pottyWait=(r.pottyWait||0)+sec;if(r.pottyWait<30)continue;r.pottyWait=0;r.potty=35;r.clean=clamp(r.clean-12);r.fun=clamp(r.fun-3);const c=q.main?null:CR.get(r.id);if(q.main){say('앗… 화장실이 필요해…','cry');fx('💩',1)}else if(c){c.cryT=2;cSay(c,'앗… 실수했어…','cry')}toast('🚽 '+r.name+'에게 화장실이 필요해 · 피비 욕실을 놓아줘',3000);save()}}
 /* ================= 루프 ================= */
-function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();if(typeof OL!=='undefined'&&OL.rt)olResize()}
+let _pfit=false;function portraitFit(){if(camera.aspect>=0.85)return;const off=camera.position.clone().sub(controls.target);if(off.length()<7.6){off.setLength(7.6);camera.position.copy(controls.target).add(off);controls.update()}}
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=camera.aspect<1?Math.min(56,38+(1-camera.aspect)*40):38;camera.updateProjectionMatrix();controls.maxDistance=(9+(S&&S.house||0)*2.5)*(camera.aspect<1?1.5:1);if(!_pfit&&typeof WALK!=='undefined'&&!WALK){_pfit=true;portraitFit()}if(typeof OL!=='undefined'&&OL.rt)olResize()}
 new ResizeObserver(resize).observe(stage);resize();
 let acc=0;
 function loop(){
@@ -2726,36 +2856,70 @@ if(!Array.isArray(S.furn))S.furn=[];if(!S.finv)S.finv={};ensureDecorState();if(!
 const away=Math.max(0,(Date.now()-(S.t||Date.now()))/1000),offlineMsg=applyOffline(away);
 {const today=new Date().toDateString();if(S.day&&S.day!==today){S.love=Math.min(100,S.love+2);setTimeout(()=>{say(S.love>=60?'오늘도 와줬네! 💕':S.love<25?'…왔어?':'안녕~ 오늘도 놀자','happy')},1500)}S.day=today}
 buildHouse(S.house||0);
-if(S.adopted&&!S.diary.length)S.diary.push({d:S.born,t:S.name+'를 처음 만난 날 🐣'});curSc=STAGES[stageOf(S.lv)].sc;dailyGift();renderTray();renderRoomToys();renderFurn();renderUI();save();updateVoiceBtn();loadOrig();loadClips();if(!VIEW_FOLLOW)shiftViewTarget(HOME_VIEW);log(offlineMsg|| (VIEW_FOLLOW?'🎥 대표 피비 따라가기':'🧭 자유 시점 · 피비를 톡 누르면 개별 관리'));if(offlineMsg)setTimeout(()=>toast(offlineMsg,4200),900);loop();
+if(S.adopted&&!S.diary.length)S.diary.push({d:S.born,t:S.name+'를 처음 만난 날 🐣'});curSc=STAGES[stageOf(S.lv)].sc;dailyGift();renderTray();renderRoomToys();renderFurn();renderUI();save();updateVoiceBtn();loadOrig();loadClips();if(!VIEW_FOLLOW)shiftViewTarget(HOME_VIEW);log(offlineMsg|| (VIEW_FOLLOW?'🎥 선택한 피비 따라가기':'🧭 자유 시점 · 피비를 톡 누르면 개별 관리'));if(offlineMsg)setTimeout(()=>toast(offlineMsg,4200),900);loop();
 setInterval(save,5000);setInterval(nag,9000);
 </script>
 
-<script id="mobile-ux-v2-js">
+<script id="mobile-ux-v3-js">
 (function(){
-  const $m=id=>document.getElementById(id), nav=$m('mobile-nav'), back=$m('mobile-backdrop'), toolbar=$m('toolbar'), tools=document.querySelector('.tools');
+  const $m=id=>document.getElementById(id),D=document.documentElement,nav=$m('mobile-nav'),back=$m('mobile-backdrop'),toolbar=$m('toolbar'),tools=document.querySelector('.tools');
   if(!nav||!back||!toolbar||!tools)return;
+  const isM=()=>D.classList.contains('m');
+  /* --- 스탯 라벨 줄이기 (🍞 배부름 → 🍞) --- */
+  document.querySelectorAll('.stats .stat label').forEach(l=>{const n=l.firstChild;if(!n||n.nodeType!==3)return;const m=n.textContent.match(/^(\S+)\s+(.+?)\s*$/);if(!m)return;
+    const e=document.createElement('span');e.textContent=m[1]+' ';const w=document.createElement('span');w.className='sw';w.textContent=m[2]+' ';l.replaceChild(e,n);l.insertBefore(w,e.nextSibling)});
+  /* --- 칩 줄 위치 --- */
+  const bstat=$m('bstat'),statsBox=document.querySelector('.stats'),loveStat=document.querySelector('.stat.love');
+  function placeChips(){if(!bstat)return;if(isM()){if(bstat.parentNode!==document.body)document.body.appendChild(bstat)}else if(bstat.parentNode!==statsBox){statsBox.insertBefore(bstat,loveStat)}}
+  /* --- 시트 --- */
   const buttons=[...nav.querySelectorAll('button[data-mob]')];
   const closeSheets=()=>{toolbar.classList.remove('mobile-open');tools.classList.remove('mobile-open');back.classList.remove('show');buttons.forEach(b=>b.classList.remove('on'))};
+  window.__pebiCloseSheets=closeSheets;
   const sheet=(el,key)=>{const open=!el.classList.contains('mobile-open');closeSheets();if(open){el.classList.add('mobile-open');back.classList.add('show');const b=nav.querySelector(`[data-mob="${key}"]`);if(b)b.classList.add('on')}};
   back.addEventListener('click',closeSheets);
-  nav.addEventListener('click',e=>{
-    const b=e.target.closest('button[data-mob]');if(!b)return;const k=b.dataset.mob;
+  nav.addEventListener('click',e=>{const b=e.target.closest('button[data-mob]');if(!b)return;const k=b.dataset.mob;
     if(k==='care'){sheet(toolbar,'care');return}
     if(k==='more'){sheet(tools,'more');return}
     closeSheets();
-    if(k==='pebi'){try{if(typeof openCrew==='function')openCrew();else $m('t-book')?.click()}catch(_){$m('t-book')?.click()}return}
-    if(k==='out'){$m('walkbtn')?.click();return}
-    if(k==='room'){$m('t-room')?.click();return}
-  });
-  toolbar.addEventListener('click',e=>{if(e.target.closest('button')&&!e.target.closest('[data-tool="food"]'))setTimeout(closeSheets,80)});
-  tools.addEventListener('click',e=>{if(e.target.closest('button,label'))setTimeout(closeSheets,80)});
+    if(k==='pebi'){try{openCrew()}catch(_){$m('t-book')&&$m('t-book').click()}return}
+    if(k==='out'){$m('walkbtn')&&$m('walkbtn').click();return}
+    if(k==='room'){$m('t-room')&&$m('t-room').click();return}});
+  toolbar.addEventListener('click',e=>{if(e.target.closest('button'))setTimeout(closeSheets,60)});
+  tools.addEventListener('click',e=>{if(e.target.closest('button')&&!e.target.closest('label'))setTimeout(closeSheets,60)});
+  tools.addEventListener('change',()=>setTimeout(closeSheets,60));
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheets()});
-  const syncOrientation=()=>{document.documentElement.dataset.orientation=innerWidth>innerHeight?'landscape':'portrait';closeSheets()};
-  addEventListener('orientationchange',()=>setTimeout(syncOrientation,120));addEventListener('resize',()=>{clearTimeout(window.__pebiMobResize);window.__pebiMobResize=setTimeout(syncOrientation,120)});syncOrientation();
+  /* --- 외출 버튼 라벨을 실제 상태(외출/집으로/알바)와 맞춤 --- */
+  const wb=$m('walkbtn'),outB=nav.querySelector('[data-mob="out"]');
+  function syncOut(){if(!wb||!outB)return;const t=(wb.textContent||'').trim(),m=t.match(/^(\S+)\s*(.*)$/);if(!m)return;outB.innerHTML='<span>'+m[1]+'</span>'+(m[2]||'외출')}
+  if(wb)new MutationObserver(syncOut).observe(wb,{childList:true,characterData:true,subtree:true});syncOut();
+  /* --- 현재 도구 표시 (손으로 돌아가기) --- */
+  const mt=document.createElement('button');mt.id='mtool';mt.type='button';document.body.appendChild(mt);
+  const TN={food:'🍓 먹이',shower:'🚿 샤워',soap:'🧼 비누',ball:'⚾ 공',feather:'🪶 깃털',bubble:'🫧 방울'};
+  function syncTool(){const t=typeof tool!=='undefined'?tool:'hand';if(t&&t!=='hand'&&TN[t]){mt.innerHTML=TN[t]+' <small>✕ 손으로</small>';mt.classList.add('show')}else mt.classList.remove('show')}
+  mt.addEventListener('click',()=>{try{setTool('hand')}catch(_){}syncTool()});
+  if(typeof setTool==='function'){const _st=setTool;setTool=function(t){_st(t);syncTool()};document.querySelectorAll('#toolbar button[data-tool]').forEach(b=>b.onclick=()=>setTool(b.dataset.tool))}
+  syncTool();
+  /* --- 브라우저 확대/스크롤/당김 방지 --- */
+  const SCROLLERS='.mcard,.actions.mobile-open,.tools.mobile-open,.tray,.roomp,.stylep,#bstat,.bk-list,.adopt,.rtabs,.rmodes,.catalog,.themegrid';
+  function canScroll(el){for(let n=el;n&&n!==document.body;n=n.parentElement){if(n.matches&&n.matches(SCROLLERS)){if(n.scrollHeight>n.clientHeight+1||n.scrollWidth>n.clientWidth+1)return true}}return false}
+  document.addEventListener('touchmove',e=>{if(!isM())return;const t=e.target;if(t&&t.tagName==='CANVAS')return;
+    if(e.touches.length>1){e.preventDefault();return}
+    if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;
+    if(!canScroll(t))e.preventDefault()},{passive:false});
+  ['gesturestart','gesturechange','gestureend'].forEach(n=>document.addEventListener(n,e=>e.preventDefault(),{passive:false}));
+  document.addEventListener('dblclick',e=>{if(isM())e.preventDefault()},{passive:false});
+  let lastEnd=0;document.addEventListener('touchend',e=>{if(!isM())return;const now=Date.now(),t=e.target;
+    if(now-lastEnd<320&&t&&!t.closest('button,a,input,textarea,select,label,canvas,.chip,.crow,.opt'))e.preventDefault();lastEnd=now},{passive:false});
+  document.addEventListener('contextmenu',e=>{if(isM()&&e.target&&e.target.tagName==='CANVAS')e.preventDefault()});
+  /* --- 방향/크기 --- */
+  function syncLayout(){if(window.__pebiLayout)window.__pebiLayout();placeChips();closeSheets();try{renderUI()}catch(_){}}
+  addEventListener('orientationchange',()=>setTimeout(syncLayout,200));
+  addEventListener('resize',()=>{clearTimeout(window.__pebiMobResize);window.__pebiMobResize=setTimeout(()=>{if(window.__pebiLayout)window.__pebiLayout();placeChips()},120)});
+  placeChips();
 })();
 </script>
 
-\n<script id="pebichubi-pwa-bootstrap">
+<script id="pebichubi-pwa-bootstrap">
 (()=>{
   const btn=document.getElementById('pwa-install');
   const standalone=()=>window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
@@ -2790,6 +2954,6 @@ setInterval(save,5000);setInterval(nag,9000);
     });
   }
 })();
-</script>\n
+</script>
 </body>
 </html>
