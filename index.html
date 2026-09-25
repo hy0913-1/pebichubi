@@ -210,7 +210,7 @@ html.m body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;oversc
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 html.m input,html.m textarea,html.m [contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 html.m button,html.m label,html.m .opt,html.m .chip,html.m .crow{touch-action:manipulation;-webkit-user-select:none;user-select:none}
-html.m .wrap{position:fixed;inset:0;max-width:none;padding:0;display:block;gap:0}
+html.m .wrap{position:static;max-width:none;padding:0;display:block;gap:0;height:0}
 /* 3D 화면: 화면 전체 */
 html.m .stage{position:fixed;inset:0;height:auto;min-height:0;max-height:none;border:0;border-radius:0;touch-action:none;z-index:0;overscroll-behavior:none}
 html.m canvas{touch-action:none;-webkit-touch-callout:none}
@@ -228,6 +228,9 @@ html.m .stat label .sw{display:none}
 html.m .stats .bar{height:6px}
 html.m .stats .bstat{display:none!important}
 /* 3D 화면 위 버튼 */
+html.m .timehud,html.m .viewbtn,html.m .mood,html.m .carehud,html.m .bag{background:color-mix(in srgb,var(--card) 94%,transparent);color:var(--ink);border:1.5px solid var(--line);box-shadow:0 2px 8px #0002;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+html.m .timehud.night{background:#36315ae6;color:#fff}
+html.m .viewbtn.on{background:#ffe0ee;color:#3b2f63}
 html.m .walkbtn{display:none}
 html.m .timehud{left:calc(var(--sl) + 8px);top:var(--hud);font-size:.74rem;padding:6px 10px}
 html.m .viewbtn{right:calc(var(--sr) + 8px);top:var(--hud);font-size:.76rem;padding:8px 12px;min-height:38px}
@@ -252,6 +255,7 @@ html.m .log{position:fixed;z-index:21;left:calc(var(--sl) + 10px);right:calc(var
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #fff,0 0 6px #fff}
 html.m .log:empty{display:none}
 html.m body:has(.tray.show) #bstat,html.m body:has(.roomp.show) #bstat,html.m body:has(.stylep.show) #bstat,html.m body:has(.stage.toymode) #bstat,html.m body:has(.stage.drive) #bstat{display:none!important}
+html.m body:has(.actions.mobile-open) #bstat,html.m body:has(.tools.mobile-open) #bstat,html.m body:has(.actions.mobile-open) .log,html.m body:has(.tools.mobile-open) .log,html.m body:has(.actions.mobile-open) #mtool,html.m body:has(.tools.mobile-open) #mtool{display:none!important}
 html.m body:has(.roomp.show) .log,html.m body:has(.stage.toymode) .log{display:none}
 /* 현재 도구 알림 */
 html.m #mtool.show{display:flex;position:fixed;z-index:31;right:calc(var(--sr) + 10px);bottom:var(--logb);align-items:center;gap:4px;min-height:44px;padding:6px 12px;border-radius:999px;
@@ -285,7 +289,7 @@ html.m .tray button{min-width:56px;min-height:56px;font-size:2rem;flex:0 0 auto;
 html.m .roomp.show{max-height:44dvh;padding:10px}
 html.m .roomp button{min-height:44px}
 html.m .roomp button.it{min-width:54px;min-height:50px}
-html.m .stylep.show .row{grid-template-columns:5.6em 1fr 2.6em}
+html.m .stylep.show .row{grid-template-columns:6.6em 1fr 3em}
 html.m .stylep input[type=range]{min-height:34px;touch-action:pan-x}
 html.m .stylep .pre button{min-height:40px}
 /* 모달 → 바텀시트 */
