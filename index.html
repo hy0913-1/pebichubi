@@ -364,6 +364,14 @@ html.m .roomp .rfoot{flex-wrap:nowrap}
 html.m .roomp .rfoot button{flex:1 1 0;min-width:0;min-height:40px;font-size:.8rem;padding:4px 6px}
 html.m.land body:has(.stage.edit) .roomp.show{right:calc(var(--sr) + 8px);max-height:calc(100dvh - var(--st) - var(--sb) - 16px)}
 </style>
+
+<style id="scn-mobile-v9-3">
+html.m.scn header,html.m.scn .exp,html.m.scn .stats,html.m.scn .timehud{display:none!important}
+html.m.scn #scnhud{--hud:calc(var(--st) + 4px)}
+html.m.scn #scnhud .s-bot{left:calc(var(--sl) + 8px);right:calc(var(--sr) + 8px)}
+html.m.scn #scnhud .s-row button{font-size:.86rem;padding:2px 4px;line-height:1.15}
+html.m.scn #scnhud .s-row button.big{font-size:1.12rem;min-height:64px}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -1759,7 +1767,7 @@ function renderOutlined(){
 
 /* ================= 바깥 산책 ================= */
 const _camT=new THREE.Vector3(),_camD=new THREE.Vector3();
-const RR=()=>!WALK?5.5:VENUE==='mart'?5.6:VENUE==='dept'?10.4:30;
+const RR=()=>!WALK?5.5:VENUE==='mart'?5.6:VENUE==='dept'?10.4:VENUE==='land'?43:30;
 let park=new THREE.Group();park.visible=false;scene.add(park);
 const roomObjs=[floor,rug,bed,...puffs,roomToys];
 let PATH=[],flowers=[],items=[],clouds=[];
@@ -3023,8 +3031,12 @@ function openJobs(){const c=$('jobcard');c.innerHTML=`<h2>💼 알바하기</h2>
   <button class="opt" data-j="cvs"><span>🏪</span><b>편의점 계산</b><i>손님 물건 값을 빨리 계산해 · 맞히면 700원~</i></button>
   <button class="opt" data-j="cafe" ${S.lv<3?'disabled':''}><span>☕</span><b>카페 주문 받기</b><i>${S.lv<3?'🔒 Lv.3에 열려':'주문 순서를 기억해서 만들기 · 한 잔에 900원~'}</i></button>
   <button class="opt" data-j="box" ${S.lv<5?'disabled':''}><span>📦</span><b>택배 분류</b><i>${S.lv<5?'🔒 Lv.5에 열려':'초록 칸에 딱 맞춰 누르기 · 성공하면 500원~'}</i></button>
+  <div class="msub" style="margin-top:8px">👫 피비들이랑 같이 하는 3D 알바 · 1시간 · 에너지 -12</div>
+  <button class="opt" data-j3="burger"><span>🍔</span><b>피비버거 알바</b><i>피비들이 요리하고 나는 주문 담당 · 주문대로 내주면 팁까지!</i></button>
+  <button class="opt" data-j3="mart"><span>🛒</span><b>피비마트 홍보</b><i>피비들이랑 춤추고 전단지 돌리기 · 손님이 들어오면 보너스</i></button>
+  <button class="opt" data-j3="farm"><span>🍓</span><b>딸기 농장</b><i>피비들이랑 빨간 딸기 따기 · 황금 딸기는 5배</i></button>
   <button class="mclose" id="jb-x">돌아가기</button>`;$('jobbox').classList.add('show');
-  $('jb-x').onclick=()=>$('jobbox').classList.remove('show');c.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>startJob(b.dataset.j))}
+  $('jb-x').onclick=()=>$('jobbox').classList.remove('show');c.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>startJob(b.dataset.j));c.querySelectorAll('[data-j3]').forEach(b=>b.onclick=()=>window.JOB3D&&JOB3D[b.dataset.j3]())}
 function jobFrame(title){$('jobcard').innerHTML=`<div class="jtop"><span>${title}</span><span id="jmoney">+0원</span></div><div class="jtimer"><i id="jt"></i></div><div id="jarea"></div>`}
 function startJob(kind){JOB={kind,earn:0,t:30,combo:0,timer:null};jobFrame({cvs:'🏪 편의점 계산',cafe:'☕ 카페 주문',box:'📦 택배 분류'}[kind]);
   const t0=performance.now();JOB.timer=setInterval(()=>{const left=30-(performance.now()-t0)/1000;$('jt').style.width=Math.max(0,left/30*100)+'%';if(left<=0)endJob()},100);
@@ -3621,31 +3633,35 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
 /* ===== 🎡 3D 피비랜드 ===== */
 (function(){
   const {V3,rnd,clampv,hudRender,info,big,fam,sayP,place,placeQ,freeAll,lookCam,sky,ground,tree,saveAlbum,flash,enterVenue,exitVenue,sunFollow}=S3D;
-  const R=32,TICKET=5000,CLOSE=1260,COLS=[0xff8fb8,0x8fd3f2,0xffd24d,0x9fe3c1,0xc9a8ff,0xffb07a];
+  const R=46,GZ=40,TICKET=5000,CLOSE=1260,COLS=[0xff8fb8,0x8fd3f2,0xffd24d,0x9fe3c1,0xc9a8ff,0xffb07a];
   const nm=r=>(r.color||'')+r.name,isBaby=r=>stageOf(r.lv)===0,gpos=o=>o.main?pet.position:o.c.g.position;
-  const SP={carousel:{e:'🎠',nm:'회전목마',c:V3(-11,0,2),r:4},ferris:{e:'🎡',nm:'관람차',c:V3(0,0,-17),r:5},coaster:{e:'🎢',nm:'롤러코스터',c:V3(14,0,-6),r:7},bumper:{e:'🚗',nm:'범퍼카',c:V3(-15,0,-9),r:5.5},
-    claw:{e:'🧸',nm:'인형뽑기',c:V3(11,0,9),r:2.8},snack:{e:'🍭',nm:'간식 가게',c:V3(-6,0,14),r:3.2},balloon:{e:'🎈',nm:'풍선 가게',c:V3(4.5,0,15),r:2.5},photo:{e:'📸',nm:'포토존',c:V3(18,0,4),r:3},toilet:{e:'🚻',nm:'화장실',c:V3(-19,0,7),r:2.8}};
-  const ENTRY={carousel:V3(-11,0,6.6),ferris:V3(0,0,-11.5),coaster:V3(14,0,1.6),bumper:V3(-15,0,-3.2),claw:V3(11,0,11.6),snack:V3(-6,0,17),balloon:V3(4.5,0,17.4),photo:V3(18,0,7.6),toilet:V3(-19,0,10)};
+  const SP={carousel:{e:'🎠',nm:'회전목마',c:V3(-14,0,4),r:4},ferris:{e:'🎡',nm:'관람차',c:V3(0,0,-26),r:5},coaster:{e:'🎢',nm:'롤러코스터',c:V3(22,0,-10),r:9},bumper:{e:'🚗',nm:'범퍼카',c:V3(-22,0,-8),r:5.5},
+    viking:{e:'🏴‍☠️',nm:'바이킹',c:V3(-18,0,-27),r:5.5},drop:{e:'🗼',nm:'자이로드롭',c:V3(15,0,-31),r:3.6},flower:{e:'🌷',nm:'꽃길 산책로',c:V3(-22,0,24),r:7.5},
+    claw:{e:'🧸',nm:'인형뽑기',c:V3(16,0,17),r:2.8},snack:{e:'🍭',nm:'간식 가게',c:V3(-8,0,21),r:3.2},balloon:{e:'🎈',nm:'풍선 가게',c:V3(6,0,23),r:2.5},photo:{e:'📸',nm:'포토존',c:V3(27,0,9),r:3},toilet:{e:'🚻',nm:'화장실',c:V3(-28,0,10),r:2.8}};
+  const ENTRY={carousel:V3(-14,0,8.6),ferris:V3(0,0,-20.5),coaster:V3(17,0,3.4),bumper:V3(-22,0,-2.8),viking:V3(-18,0,-21.4),drop:V3(15,0,-26.8),flower:V3(-13.2,0,24),claw:V3(16,0,19.6),snack:V3(-8,0,24),balloon:V3(6,0,25.4),photo:V3(27,0,12.6),toilet:V3(-28,0,13)};
+  const FLW={rx:7,rz:5.5};
   /* ---------------- 맵 만들기 ---------------- */
   function stripeTex(a,b,n=8){const c=document.createElement('canvas');c.width=128;c.height=16;const x=c.getContext('2d');for(let i=0;i<n;i++){x.fillStyle=i%2?a:b;x.fillRect(i*128/n,0,128/n+1,16)}const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t}
-  function sign(g,text,x,y,z,w=3,bg='#ff8fb8'){const s=textSprite(text,w,{w:512,h:110,bg,fg:'#ffffff',size:56});s.position.set(x,y,z);g.add(s);return s}
+  const SIGNS=[];function sign(g,text,w,x,y,z,bg='#ff8fb8'){const s=textSprite(text,w,{w:512,h:110,bg,fg:'#ffffff',size:56});s.material.transparent=true;s.position.set(x,y,z);g.add(s);SIGNS.push(s);return s}
   function horse(col){const h=new THREE.Group();const body=sp_(h,.34,col,0,.62,0,.8,.75,1.35);body.castShadow=true;sp_(h,.2,col,0,.95,.42,.8,1,1.2);sp_(h,.07,0x3b2f63,.08,1.02,.6);sp_(h,.07,0x3b2f63,-.08,1.02,.6);
     for(const [x,z] of [[.14,.28],[-.14,.28],[.14,-.28],[-.14,-.28]])cy(h,.05,.05,.5,0xffffff,x,.28,z);sp_(h,.12,0xffd24d,0,.84,-.05,1.2,.4,1.4);cy(h,.03,.03,2.3,0xf5c542,0,1.4,0);return h}
   function build(){const g=new THREE.Group(),U={};sky(g,'#79c4ff','#f4fbff');
     ground(g,R,(x,W)=>{const P=v=>(v+R)/(2*R)*W;x.fillStyle='#8fd87c';x.fillRect(0,0,W,W);for(let i=0;i<500;i++){x.fillStyle=Math.random()<.5?'#86d073':'#9ae088';x.fillRect(Math.random()*W,Math.random()*W,6,6)}
-      x.strokeStyle='#f3e2c4';x.lineCap='round';x.lineWidth=W/2/R*3.2;x.beginPath();x.moveTo(P(0),P(30));x.lineTo(P(0),P(4));x.stroke();x.beginPath();x.arc(P(0),P(4),W/2/R*7,0,7);x.stroke();
+      x.strokeStyle='#f3e2c4';x.lineCap='round';x.lineWidth=W/2/R*3.2;x.beginPath();x.moveTo(P(0),P(R));x.lineTo(P(0),P(4));x.stroke();x.beginPath();x.arc(P(0),P(4),W/2/R*7,0,7);x.stroke();
       for(const k in ENTRY){const e=ENTRY[k];x.beginPath();x.moveTo(P(0),P(4));x.lineTo(P(e.x),P(e.z));x.stroke()}x.fillStyle='#f3e2c4';x.beginPath();x.arc(P(0),P(4),W/2/R*5,0,7);x.fill();
+      {const F=SP.flower.c,u=W/2/R;for(let i=0;i<1100;i++){const a=Math.random()*6.283,k=Math.random()<.45?rnd(.1,.8):rnd(1.2,1.62);x.fillStyle=['#ff9fc4','#ffe066','#c9a8ff','#ffffff','#ff7aa2','#8fd3f2'][i%6];x.beginPath();x.arc(P(F.x+Math.cos(a)*FLW.rx*k),P(F.z+Math.sin(a)*FLW.rz*k),2.4,0,7);x.fill()}
+        x.strokeStyle='#f7dbe8';x.lineWidth=u*2.1;x.beginPath();x.ellipse(P(F.x),P(F.z),u*FLW.rx,u*FLW.rz,0,0,7);x.stroke();x.strokeStyle='#f3e2c4';}
       x.fillStyle='#ffffff55';for(let i=0;i<60;i++){x.beginPath();x.arc(Math.random()*W,Math.random()*W,3,0,7);x.fill()}});
     // 울타리 · 나무
-    for(let i=0;i<64;i++){const a=i/64*6.283;cy(g,.06,.06,1.1,0xffffff,Math.cos(a)*(R-1),.55,Math.sin(a)*(R-1))}const fr=new THREE.Mesh(new THREE.TorusGeometry(R-1,.05,4,96),M_(0xffffff));fr.rotation.x=Math.PI/2;fr.position.y=.9;g.add(fr);
-    for(let i=0;i<46;i++){const a=i/46*6.283+rnd(-.05,.05),rr=rnd(R-4,R-2);if(Math.abs(Math.cos(a))<.18&&Math.sin(a)>0)continue;tree(g,Math.cos(a)*rr,Math.sin(a)*rr,rnd(1.2,1.9))}
-    for(const [x,z] of [[-4,8],[4,8],[-8,-4],[8,-4],[-3,-8],[6,3],[-24,-2],[24,-6],[-10,20],[12,18]])tree(g,x,z,1.3);
+    for(let i=0;i<96;i++){const a=i/96*6.283;cy(g,.06,.06,1.1,0xffffff,Math.cos(a)*(R-1),.55,Math.sin(a)*(R-1))}const fr=new THREE.Mesh(new THREE.TorusGeometry(R-1,.05,4,96),M_(0xffffff));fr.rotation.x=Math.PI/2;fr.position.y=.9;g.add(fr);
+    for(let i=0;i<66;i++){const a=i/66*6.283+rnd(-.04,.04),rr=rnd(R-4,R-2);if(Math.abs(Math.cos(a))<.18&&Math.sin(a)>0)continue;tree(g,Math.cos(a)*rr,Math.sin(a)*rr,rnd(1.2,1.9))}
+    for(const [x,z] of [[-5,11],[5,11],[-9,-5],[9,-5],[-5,-13],[7,3],[-33,-4],[-12,31],[13,29],[33,20],[-7,-37],[6,-40],[-34,-18],[30,-26],[-7,36],[7,36],[-30,31],[25,24]])tree(g,x,z,1.3);
     // 가로등 · 벤치 · 깃발
-    for(const [x,z] of [[-2,20],[2,20],[-2,12],[2,12],[-7,4],[7,4],[0,-4],[-6,-2],[6,-2]]){cy(g,.06,.08,3,0x5b6475,x,1.5,z);const l=sp_(g,.22,0xfff3b0,x,3.05,z);l.material.emissive=new THREE.Color(0xfff0a0);l.material.emissiveIntensity=.6}
-    for(const [x,z,ry] of [[-3.5,9,0],[3.5,9,0],[-8,8,.8],[8,8,-.8]]){const b=new THREE.Group();bx(b,1.4,.1,.45,0xc98d5a,0,.45,0);bx(b,1.4,.4,.08,0xc98d5a,0,.7,-.2);for(const xx of[-.55,.55])bx(b,.08,.45,.4,0x5b6475,xx,.22,0);b.position.set(x,0,z);b.rotation.y=ry;g.add(b)}
+    for(const [x,z] of [[-2.2,31],[2.2,31],[-2.2,21],[2.2,21],[-2.2,12],[2.2,12],[-9,5],[9,5],[0,-7],[-8,-3],[8,-3],[-13,16],[13,15],[-7,-17],[7,-17],[-24,15],[24,-1]]){cy(g,.06,.08,3,0x5b6475,x,1.5,z);const l=sp_(g,.22,0xfff3b0,x,3.05,z);l.material.emissive=new THREE.Color(0xfff0a0);l.material.emissiveIntensity=.6}
+    for(const [x,z,ry] of [[-3.6,16,0],[3.6,16,0],[-10,10,.8],[10,10,-.8],[-22,24,0],[11,6,-.8],[-5,-19,0],[5,-19,0]]){const b=new THREE.Group();bx(b,1.4,.1,.45,0xc98d5a,0,.45,0);bx(b,1.4,.4,.08,0xc98d5a,0,.7,-.2);for(const xx of[-.55,.55])bx(b,.08,.45,.4,0x5b6475,xx,.22,0);b.position.set(x,0,z);b.rotation.y=ry;g.add(b)}
     // 정문
-    for(const xx of[-4,4]){const t=cy(g,.7,.8,5,0xff8fb8,xx,2.5,26);t.castShadow=true;const cone=new THREE.Mesh(new THREE.ConeGeometry(1,1.6,12),M_(0x8fd3f2));cone.position.set(xx,5.8,26);g.add(cone)}
-    const arch=new THREE.Mesh(new THREE.TorusGeometry(4,.35,8,24,Math.PI),M_(0xffd24d));arch.position.set(0,4.2,26);g.add(arch);sign(g,'🎡 PEBI LAND',6.5,0,8.6,26,'#ff5c8a');
+    for(const xx of[-4,4]){const t=cy(g,.7,.8,5,0xff8fb8,xx,2.5,GZ);t.castShadow=true;const cone=new THREE.Mesh(new THREE.ConeGeometry(1,1.6,12),M_(0x8fd3f2));cone.position.set(xx,5.8,GZ);g.add(cone)}
+    const arch=new THREE.Mesh(new THREE.TorusGeometry(4,.35,8,24,Math.PI),M_(0xffd24d));arch.position.set(0,4.2,GZ);g.add(arch);sign(g,'🎡 PEBI LAND',6.5,0,8.6,GZ,'#ff5c8a');
     // 분수
     cy(g,2.6,2.8,.5,0xdfeaff,0,.25,4);const wt=cy(g,2.4,2.4,.08,0x6fd0ff,0,.48,4);wt.material.transparent=true;wt.material.opacity=.8;cy(g,.3,.4,1.6,0xdfeaff,0,1.1,4);sp_(g,.5,0x8fd3f2,0,1.9,4);
     U.drops=[];for(let i=0;i<14;i++){const d=sp_(g,.07,0xbfe9ff,0,2,4);d.userData={a:i/14*6.283,t:Math.random()};U.drops.push(d)}
@@ -3661,19 +3677,51 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
       U.cabins=[];for(let i=0;i<10;i++){const cb=new THREE.Group();const col=COLS[i%6];bx(cb,2.3,.12,1.4,col,0,-2.2,0);bx(cb,2.4,.14,1.5,col,0,-.1,0);for(const [x,z] of [[-1.1,-.65],[1.1,-.65],[-1.1,.65],[1.1,.65]])bx(cb,.08,2.1,.08,0xffffff,x,-1.15,z);bx(cb,2.3,.8,.08,col,0,-1.8,-.65);bx(cb,2.3,.35,.08,col,0,-1.95,.65);cy(cb,.05,.05,.8,0x999999,0,.3,0);g.add(cb);U.cabins.push(cb)}
       U.fer={st,wheel,cyH,Rw,F};sign(g,'🎡 관람차',2.6,F.x+4.5,3,F.z+3)}
     // 🎢 롤러코스터
-    {const K=SP.coaster.c,raw=[[0,1.4,6.5],[4,1.4,6],[6.8,4,3],[7.2,7,-.5],[5,3.2,-4],[1.5,1.6,-5.5],[-2.5,4.8,-5.5],[-6,6.5,-3],[-7.2,3,.5],[-5.5,1.6,4],[-2.5,1.4,6.3]];
-      const curve=new THREE.CatmullRomCurve3(raw.map(p=>V3(K.x+p[0],p[1],K.z+p[2])),true,'catmullrom',.4);const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,260,.1,6,true),M_(0xff5c8a));tube.castShadow=true;g.add(tube);
-      const tube2=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(raw.map(p=>V3(K.x+p[0],p[1]-.35,K.z+p[2])),true,'catmullrom',.4),200,.05,5,true),M_(0xffffff));g.add(tube2);
-      for(let i=0;i<46;i++){const p=curve.getPointAt(i/46);if(p.y>.9)cy(g,.07,.07,p.y-.1,0xffffff,p.x,(p.y-.1)/2,p.z)}
+    {const K=SP.coaster.c,raw=[[-6,1.2,9],[0,1.2,10],[5,2.4,9.2],[8.8,6,6.6],[10.8,11,2.4],[10.6,12,-1],[8.2,4.2,-5.6],[4,1.6,-9],[-1,3,-11],[-5,7.6,-10],[-8.4,4,-6.4],[-6.4,2.4,-2],[-1.5,5.2,-2.6],[3,2.6,-3.6],[5.4,3.4,.4],[2.2,4.4,3.6],[-3,2.3,2.2],[-8.6,3.6,1.2],[-11,2,5],[-10,1.3,8.4]];
+      const curve=new THREE.CatmullRomCurve3(raw.map(p=>V3(K.x+p[0],p[1],K.z+p[2])),true,'catmullrom',.4);const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,520,.1,6,true),M_(0xff5c8a));tube.castShadow=true;g.add(tube);
+      const tube2=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(raw.map(p=>V3(K.x+p[0],p[1]-.35,K.z+p[2])),true,'catmullrom',.4),420,.05,5,true),M_(0xffffff));g.add(tube2);
+      for(let i=0;i<96;i++){const p=curve.getPointAt(i/96);if(p.y>.9)cy(g,.07,.07,p.y-.1,0xffffff,p.x,(p.y-.1)/2,p.z)}
       const stP=curve.getPointAt(0.02);bx(g,4,.3,2.2,0xdfeaff,stP.x+1,.15,stP.z);for(const [dx,dz] of [[-.8,-1],[2.8,-1],[-.8,1],[2.8,1]])cy(g,.08,.08,2.6,0xffffff,stP.x+dx,1.3,stP.z+dz);bx(g,4.2,.2,2.6,0x8fd3f2,stP.x+1,2.7,stP.z);
       const cart=new THREE.Group();bx(cart,1.2,.32,2.4,0xff5c8a,0,.16,0);for(const zz of[.7,0,-.7])bx(cart,1.1,.35,.12,0xffffff,0,.45,zz-.22);const nose=new THREE.Mesh(new THREE.ConeGeometry(.6,.7,4),M_(0xffd24d));nose.rotation.x=Math.PI/2;nose.position.set(0,.2,1.45);cart.add(nose);g.add(cart);
-      U.cst={curve,cart,len:curve.getLength(),u:.02};sign(g,'🎢 롤러코스터',3,K.x,8.6,K.z)}
+      let hm=0,ut=0;for(let i=0;i<=500;i++){const p=curve.getPointAt(i/500);if(p.y>hm){hm=p.y;ut=i/500}}U.cst={curve,cart,len:curve.getLength(),u:.02,hmax:hm+.4,uTop:ut};sign(g,'🎢 롤러코스터',3.2,K.x,14.6,K.z)}
     // 🚗 범퍼카
     {const B=SP.bumper.c,W=10,D=8;const fl=new THREE.Mesh(new THREE.PlaneGeometry(W,D),new THREE.MeshToonMaterial({map:stripeTex('#4a4870','#3b3a5c',10),gradientMap:GRAD}));fl.rotation.x=-Math.PI/2;fl.position.set(B.x,.03,B.z);g.add(fl);
       for(const [w,d,x,z] of [[W,.2,0,-D/2],[W,.2,0,D/2],[.2,D,-W/2,0],[.2,D,W/2,0]])bx(g,w,.45,d,0xffd24d,B.x+x,.22,B.z+z);for(const [x,z] of [[-W/2,-D/2],[W/2,-D/2],[-W/2,D/2],[W/2,D/2]])cy(g,.1,.1,3.4,0xffffff,B.x+x,1.7,B.z+z);
       for(const zz of[-D/2]){const bn=new THREE.Mesh(new THREE.BoxGeometry(W,.5,.1),new THREE.MeshToonMaterial({map:stripeTex('#ff8fb8','#ffffff',8),gradientMap:GRAD}));bn.position.set(B.x,3.3,B.z+zz);g.add(bn)}
       U.cars=[];for(let i=0;i<7;i++){const c=new THREE.Group();const col=COLS[i%6];bx(c,1.1,.35,1.4,col,0,.3,0);const bump=new THREE.Mesh(new THREE.TorusGeometry(.72,.1,6,20),M_(0x3b3a52));bump.rotation.x=Math.PI/2;bump.scale.set(1,1.2,1);bump.position.y=.22;c.add(bump);bx(c,.8,.4,.15,col,0,.6,-.55);cy(c,.02,.02,2.9,0x999999,0,1.9,-.55);
         c.position.set(B.x+rnd(-3.5,3.5),0,B.z+rnd(-2.5,2.5));g.add(c);const npc=i>=0?sprite(pick(['🧒','👧','👦','🧑','👩']),.7):null;npc.position.set(0,.95,0);c.add(npc);U.cars.push({m:c,npc,vx:rnd(-1,1),vz:rnd(-1,1),tx:0,tz:0})}U.bmp={B,W,D};sign(g,'🚗 범퍼카',2.6,B.x,4.4,B.z)}
+
+    // 🏴‍☠️ 바이킹
+    {const V=SP.viking.c,piv=8,arm=6.2;const st=new THREE.Group();st.position.copy(V);g.add(st);bx(st,12,.24,6.4,0xdfeaff,0,.12,0);
+      for(const zz of[-2.3,2.3])for(const s of[-1,1]){const leg=bx(st,.34,9.2,.34,0xffffff,s*2.3,4.3,zz);leg.rotation.z=s*.52;leg.castShadow=true}
+      const beam=cy(st,.24,.24,5,0xffd24d,0,piv,0);beam.rotation.x=Math.PI/2;
+      const sw=new THREE.Group();sw.position.set(0,piv,0);st.add(sw);
+      for(const zz of[-1.6,1.6])for(const s of[-1,1]){const a=bx(sw,.16,arm,.16,0xff8fb8,0,0,zz);a.geometry.translate(0,-arm/2,0);a.rotation.z=s*.36}
+      const boat=new THREE.Group();boat.position.y=-arm;sw.add(boat);const hull=bx(boat,7.6,1,2.8,0xc98d5a,0,0,0);hull.castShadow=true;bx(boat,7.9,.18,3,0xffd24d,0,.55,0);
+      for(const s of[-1,1]){const e=bx(boat,1.5,1.7,2.6,0xc98d5a,s*4.1,.6,0);e.rotation.z=-s*.5;sp_(boat,.42,0xffd24d,s*4.75,1.55,0)}
+      for(const zz of[.72,-.72]){bx(boat,6.8,.14,.6,0x8a5a3a,0,.58,zz);bx(boat,6.8,.55,.1,0x8a5a3a,0,.85,zz-.32)}
+      cy(boat,.07,.07,3.4,0xffffff,0,2.2,-1.2);const flag=new THREE.Mesh(new THREE.PlaneGeometry(1.7,1.05),new THREE.MeshToonMaterial({map:stripeTex('#ff8fb8','#ffffff',6),gradientMap:GRAD,side:THREE.DoubleSide}));flag.position.set(.85,3.3,-1.2);boat.add(flag);
+      const seatX=[3.1,2.2,1.3,.4,-.5,-1.4,-2.3,-3.1],front=[],back=[];for(const x of seatX){const f=sprite(pick(['🧑','👩','👦','👧','🧒','👨']),.62);f.position.set(x,1.02,.74);boat.add(f);front.push(f)}
+      for(let i=0;i<5;i++){const b=sprite(pick(['🧑','👩','👦','👧','🧒']),.6);b.position.set(-2.6+i*1.3,1.02,-.7);boat.add(b);back.push(b)}
+      U.vik={V,sw,boat,seatX,front,piv};sign(g,'🏴‍☠️ 바이킹',2.8,V.x,piv+2.8,V.z)}
+    // 🗼 자이로드롭
+    {const D=SP.drop.c,H=24;const tw=cy(g,.95,1.15,H,0xffffff,D.x,H/2,D.z,16);tw.castShadow=true;cy(g,3.3,3.5,.3,0xdfeaff,D.x,.15,D.z,24);
+      for(let y=2.5,k=0;y<H;y+=2.5,k++){const rg=new THREE.Mesh(new THREE.TorusGeometry(1.03,.09,6,20),M_(k%2?0x8fd3f2:0xff8fb8));rg.rotation.x=Math.PI/2;rg.position.set(D.x,y,D.z);g.add(rg)}
+      const cap=new THREE.Mesh(new THREE.ConeGeometry(1.7,2.4,16),M_(0xff5c8a));cap.position.set(D.x,H+1.2,D.z);g.add(cap);const lt=sp_(g,.38,0xfff3b0,D.x,H+2.6,D.z);lt.material.emissive=new THREE.Color(0xfff0a0);lt.material.emissiveIntensity=.7;
+      const ring=new THREE.Group();ring.position.set(D.x,1.2,D.z);g.add(ring);const rt=new THREE.Mesh(new THREE.TorusGeometry(1.75,.24,8,32),M_(0xffd24d));rt.rotation.x=Math.PI/2;ring.add(rt);
+      const seats=[];for(let i=0;i<10;i++){const a=i/10*6.283,sx=Math.cos(a),sz=Math.sin(a);const s=new THREE.Group();s.position.set(sx*2.2,0,sz*2.2);s.rotation.y=Math.atan2(sx,sz);ring.add(s);bx(s,.64,.12,.6,COLS[i%6],0,-.05,0);bx(s,.64,.95,.1,COLS[i%6],0,.42,-.3);const n=sprite(pick(['🧑','👩','👦','👧','🧒','👨']),.6);n.position.set(0,.45,.05);s.add(n);seats.push({s,n})}
+      U.drp={D,H,ring,seats,top:H-2};sign(g,'🗼 자이로드롭',2.8,D.x,4.8,D.z+3.8)}
+    // 🌷 꽃길 산책로
+    {const F=SP.flower.c,rx=FLW.rx,rz=FLW.rz,N=280,cols=[0xff9fc4,0xffe066,0xc9a8ff,0xffffff,0xff7aa2,0x8fd3f2,0xffb07a];
+      const head=new THREE.InstancedMesh(new THREE.SphereGeometry(.15,7,5),new THREE.MeshToonMaterial({gradientMap:GRAD}),N),stem=new THREE.InstancedMesh(new THREE.CylinderGeometry(.025,.025,1,4),new THREE.MeshToonMaterial({color:0x5fb85a,gradientMap:GRAD}),N);
+      const m4=new THREE.Matrix4(),col=new THREE.Color();for(let i=0;i<N;i++){const a=Math.random()*6.283,k=i%5<2?rnd(1.24,1.62):rnd(.18,.8),x=F.x+Math.cos(a)*rx*k,z=F.z+Math.sin(a)*rz*k,h=rnd(.3,.55);
+        m4.makeTranslation(x,h,z);head.setMatrixAt(i,m4);col.setHex(cols[i%cols.length]);head.setColorAt(i,col);m4.makeScale(1,h,1).setPosition(x,h/2,z);stem.setMatrixAt(i,m4)}
+      if(head.instanceColor)head.instanceColor.needsUpdate=true;g.add(stem);g.add(head);tree(g,F.x,F.z,1.5);
+      const ar=new THREE.Mesh(new THREE.TorusGeometry(1.7,.13,6,20,Math.PI),M_(0xffffff));ar.position.set(F.x+rx,0,F.z);ar.rotation.y=Math.PI/2;g.add(ar);
+      for(let i=0;i<7;i++){const a=i/6*Math.PI,f=sprite(['🌸','🌼','🌷','🌹','🌸','🌼','🌷'][i],.5);f.position.set(F.x+rx,Math.sin(a)*1.7,F.z+Math.cos(a)*1.7);g.add(f)}
+      const pts=[];for(let i=0;i<28;i++){const a=i/28*6.283;pts.push(V3(F.x+Math.cos(a)*rx,0,F.z+Math.sin(a)*rz))}
+      const bfl=[];for(let i=0;i<7;i++){const b=sprite('🦋',.45);g.add(b);bfl.push(b)}
+      U.flw={F,rx,rz,pts,bfl};sign(g,'🌷 꽃길 산책로',2.8,F.x+rx,3.3,F.z)}
     // 🧸 인형뽑기
     {const Wc=SP.claw.c;const tent=new THREE.Mesh(new THREE.ConeGeometry(3,1.6,4,1,true),new THREE.MeshToonMaterial({map:stripeTex('#c9a8ff','#ffffff',8),gradientMap:GRAD,side:THREE.DoubleSide}));tent.position.set(Wc.x,3.6,Wc.z);tent.rotation.y=Math.PI/4;g.add(tent);for(const [x,z] of [[-2,-2],[2,-2],[-2,2],[2,2]])cy(g,.07,.07,2.8,0xffffff,Wc.x+x,1.4,Wc.z+z);
       U.claws=[];for(const dx of[-.8,.8]){const m=new THREE.Group();m.position.set(Wc.x+dx,0,Wc.z);bx(m,1.3,.9,1.1,0xff8fb8,0,.45,0);const gl=new THREE.Mesh(new THREE.BoxGeometry(1.2,1.1,1),new THREE.MeshToonMaterial({color:0xcfefff,transparent:true,opacity:.32,gradientMap:GRAD}));gl.position.y=1.45;m.add(gl);bx(m,1.3,.2,1.1,0xff8fb8,0,2.1,0);
@@ -3685,7 +3733,7 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
     {const Pz=SP.photo.c;const ar=new THREE.Mesh(new THREE.TorusGeometry(2,.22,8,28,Math.PI),M_(0xff8fb8));ar.position.set(Pz.x,1.2,Pz.z);g.add(ar);for(const x of[-2,2])cy(g,.22,.22,1.2,0xff8fb8,Pz.x+x,.6,Pz.z);for(let i=0;i<7;i++){const s=sprite('💗',.5);const a=i/6*Math.PI;s.position.set(Pz.x+Math.cos(a)*2,1.2+Math.sin(a)*2,Pz.z+.1);g.add(s)}const bd=new THREE.Mesh(new THREE.PlaneGeometry(5,3.4),new THREE.MeshToonMaterial({color:0xffe3ef,gradientMap:GRAD}));bd.position.set(Pz.x,1.7,Pz.z-.6);g.add(bd);sign(g,'📸 PEBI LAND',3.4,Pz.x,3.8,Pz.z-.5,'#ff5c8a')}
     {const T=SP.toilet.c;bx(g,4,2.6,3,0xdfeaff,T.x,1.3,T.z);bx(g,4.3,.3,3.3,0x8fd3f2,T.x,2.7,T.z);bx(g,.9,1.8,.05,0x6fb8ff,T.x-.8,.9,T.z+1.52);bx(g,.9,1.8,.05,0xff8fb8,T.x+.8,.9,T.z+1.52);sign(g,'🚻 화장실',2.2,T.x,3.5,T.z+1.6,'#6fb8ff')}
     // 사람들
-    U.npc=[];for(let i=0;i<18;i++){const s=sprite(pick(['🧑','👩','👨','👧','👦','👵','👴','🧒','👩‍🦰','🧑‍🦱']),rnd(.75,1));const a=rnd(0,6.283),rr=rnd(5,20);s.position.set(Math.cos(a)*rr,.6,4+Math.sin(a)*rr*.8);g.add(s);U.npc.push({s,t:V3(),w:0})}
+    U.npc=[];for(let i=0;i<28;i++){const s=sprite(pick(['🧑','👩','👨','👧','👦','👵','👴','🧒','👩‍🦰','🧑‍🦱']),rnd(.75,1));const a=rnd(0,6.283),rr=rnd(5,30);s.position.set(Math.cos(a)*rr,.6,4+Math.sin(a)*rr*.8);g.add(s);U.npc.push({s,t:V3(),w:0})}
     g.userData=U;return g}
   /* ---------------- 상태 ---------------- */
   let L=null;
@@ -3695,8 +3743,8 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
     const cost=TICKET*go.length;if(S.money<cost){toast('💸 입장권 '+won(cost)+'이 필요해 · 지금 '+won(S.money));return}
     if(!confirm(`🎡 피비랜드 자유이용권 ${won(TICKET)} × ${go.length}마리 = ${won(cost)}\n놀이기구는 무제한이야. 들어갈까?`))return;S.money-=cost;
     const hide=new Set(S.crew.filter(r=>r.sick||isAtSchool(r)).map(r=>r.id));
-    enterVenue('land',build,g=>{const U=g.userData;L={g,U,mode:'walk',spent:cost,rides:[],snacks:0,photos:0,log:[],hold:true,stroller:null,strollerM:null,balloon:{},plush:{},cry:{},potty:{},lost:null,lastLost:performance.now(),evT:0,hungry:{},ride:null,pend:null,down:null};
-      pet.position.set(0,0,19.5);pet.rotation.set(0,Math.PI,0);controls.target.set(0,1,17.5);camera.position.set(0,5.6,26.5);controls.update();setTimeout(crewNear,30);setAnim('hop',true);
+    enterVenue('land',build,g=>{const U=g.userData;L={g,U,mode:'walk',spent:cost,rides:[],snacks:0,photos:0,log:[],hold:true,stroller:null,strollerM:null,balloon:{},plush:{},cry:{},potty:{},lost:null,lastLost:performance.now(),evT:0,pin:{},hungry:{},ride:null,pend:null,down:null};
+      pet.position.set(0,0,GZ-6);pet.rotation.set(0,Math.PI,0);controls.target.set(0,1,GZ-8);camera.position.set(0,6.5,GZ+1.5);controls.maxPolarAngle=1.22;controls.update();setTimeout(crewNear,30);setAnim('hop',true);
       say(pick(['놀이공원이다~!!','우와아 저거 봐!','신난다 신난다!']),'happy');setTimeout(()=>{for(const c of CR.values())try{cSay(c,pick(['꺄아~!','저거 타자!','솜사탕!!']),'happy')}catch(_){}},700);addDiary('funpark3d','🎡 처음으로 피비랜드에 갔어!');
       SCN={lockMain:false,hide,input,update,afterRender,cleanup};walkHud();big('🎡 피비랜드에 온 걸 환영해!',2.2);if(sick.length)setTimeout(()=>toast('🤒 '+sick.map(r=>r.name).join(', ')+'는 아파서 집에서 쉬어'),1500)})}
   window.openFunpark=open;window.openFunpark3D=open;
@@ -3705,14 +3753,14 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
   function famHtml(){return `<div class="s-fam">${fam().filter(o=>!SCN.hide.has(o.r.id)).map((o,i)=>{const ic=icon(o);return `<button data-fi="${i}" class="${['😭','🚽⏰','🍞','😪','❓'].includes(ic)?'warn':''}">${nm(o.r)} ${ic}</button>`}).join('')}</div>`}
   function alertHtml(){if(L.lost)return `<div class="s-alert">😱 ${nm(L.lost.o.r)}가 안 보여! 걸어 다니며 찾아줘 · ${Math.max(0,Math.ceil((L.lost.until-performance.now())/1000))}초</div>`;const p=Object.keys(L.potty)[0];if(p){const r=[S,...S.crew].find(x=>x.id===p);return `<div class="s-alert">🚽 ${r?r.name:''} 화장실 급해! ${Math.max(0,Math.ceil((L.potty[p]-performance.now())/1000))}초 <button id="l-wc">🚻 가기</button></div>`}return ''}
   function clock(){const m=S.gameMinute||0;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(Math.floor(m%60)).padStart(2,'0')}
-  function walkHud(panel){if(!L)return;hudRender({title:'🎡 피비랜드',info:`🕐 ${clock()} · 💰 ${won(S.money)}`,fam:famHtml(),alert:alertHtml(),panel:panel||'',rows:[`<button id="l-hold" class="${L.hold?'on':''}">🤝 손잡기 ${L.hold?'ON':'OFF'}</button><button id="l-str" class="${L.stroller?'on':''}">🛒 유모차</button><button id="l-map">🗺️ 바로가기</button><button id="l-out">🏠 나가기</button>`],
+  function walkHud(panel){if(!L)return;hudRender({title:'🎡 피비랜드',info:`🕐 ${clock()} · 💰 ${won(S.money)}`,fam:famHtml(),alert:alertHtml(),panel:panel||'',rows:[`<button id="l-hold" class="${L.hold?'on':''}">🤝 ${L.hold?'손잡는 중':'손잡기'}</button><button id="l-str" class="${L.stroller?'on':''}">🛒 유모차</button><button id="l-map">🗺️ 지도</button><button id="l-out">🏠 나가기</button>`],
     bind:h=>{h.querySelectorAll('[data-fi]').forEach(b=>b.onclick=()=>{const o=fam().filter(o=>!SCN.hide.has(o.r.id))[+b.dataset.fi];if(o)touch(o)});const q=s=>h.querySelector(s);
       q('#l-hold').onclick=()=>{L.hold=!L.hold;if(L.hold)fam().forEach(o=>sayP(o,pick(['손 꼭 잡을게!','헤헤 따뜻해']),'happy'));walkHud()};q('#l-str').onclick=toggleStroller;q('#l-map').onclick=()=>walkHud(mapPanel());q('#l-out').onclick=()=>leave(false);if(q('#l-wc'))q('#l-wc').onclick=()=>goSpot('toilet',true);
       h.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goSpot(b.dataset.go,true));if(q('#l-close'))q('#l-close').onclick=()=>walkHud();if(q('#l-yes'))q('#l-yes').onclick=()=>{const k=L.pend;L.pend=null;startSpot(k)};if(q('#l-no'))q('#l-no').onclick=()=>{L.pend=null;walkHud()}}})}
   function refreshHud(){if(!L||L.mode!=='walk'){return}const h=S3D.hud,i=h.querySelector('.s-info');if(i)i.innerHTML=`🕐 ${clock()} · 💰 ${won(S.money)}`;const f=h.querySelector('#s-famw');if(f){f.innerHTML=famHtml();f.querySelectorAll('[data-fi]').forEach(b=>b.onclick=()=>{const o=fam().filter(o=>!SCN.hide.has(o.r.id))[+b.dataset.fi];if(o)touch(o)})}const a=h.querySelector('#s-alertw');if(a){a.innerHTML=alertHtml();const w=a.querySelector('#l-wc');if(w)w.onclick=()=>goSpot('toilet',true)}}
   function mapPanel(){return `<div class="s-panel"><h3>🗺️ 어디로 갈까? (톡하면 바로 이동)</h3><div class="s-grid">${Object.entries(SP).map(([k,s])=>`<button data-go="${k}"><span>${s.e}</span>${s.nm}</button>`).join('')}</div><div class="s-row" style="margin-top:6px"><button id="l-close">닫기</button></div></div>`}
-  const DESC={carousel:'빙글빙글 목마! 앞으로 올 때 손 흔들고 사진 찍기',ferris:'꼭대기에서 "사랑해" 하면 효과 두 배! 셀카도 찍자',coaster:'내려갈 때 🤝 손 꽉 잡기! 아기 피비는 키 제한',bumper:'화면을 끌어서 운전! 피비 차에 쿵',claw:'1회 1,000원 · 뽑은 인형은 피비에게 선물',snack:'배고픈 피비에게 간식 사주기',balloon:'피비에게 풍선 사주기 (가끔 놓쳐서 울어)',photo:'포즈 골라서 가족사진 찰칵',toilet:'화장실 급한 피비 데려가기'};
-  function prompt(k){L.pend=k;const s=SP[k];walkHud(`<div class="s-panel"><h3>${s.e} ${s.nm}</h3><div>${DESC[k]}</div><div class="s-row" style="margin-top:8px"><button id="l-yes" class="hot">${['snack','balloon','photo','toilet','claw'].includes(k)?'들어가기':'타러 가기'}</button><button id="l-no">다음에</button></div></div>`)}
+  const DESC={carousel:'빙글빙글 목마! 앞으로 올 때 손 흔들고 사진 찍기',ferris:'꼭대기에서 "사랑해" 하면 효과 두 배! 셀카도 찍자',coaster:'내려갈 때 🤝 손 꽉 잡기! 아기 피비는 키 제한',bumper:'화면을 끌어서 운전! 피비 차에 쿵',claw:'1회 1,000원 · 뽑은 인형은 피비에게 선물',snack:'배고픈 피비에게 간식 사주기',balloon:'피비에게 풍선 사주기 (가끔 놓쳐서 울어)',photo:'포즈 골라서 가족사진 찰칵',toilet:'화장실 급한 피비 데려가기',viking:'앞뒤로 크게 흔들흔들! 높이 올라갈 때 🤝 손 꽉 잡기',drop:'천천히 올라갔다가 슈웅—! 떨어질 때 🤝 손 꽉 잡기 · 아기 피비는 키 제한',flower:'손잡고 꽃길을 천천히 걷기 · 기분·에너지 회복, 꽃 선물도 할 수 있어'};
+  function prompt(k){L.pend=k;const s=SP[k];walkHud(`<div class="s-panel"><h3>${s.e} ${s.nm}</h3><div>${DESC[k]}</div><div class="s-row" style="margin-top:8px"><button id="l-yes" class="hot">${k==='flower'?'산책하기':['snack','balloon','photo','toilet','claw'].includes(k)?'들어가기':'타러 가기'}</button><button id="l-no">다음에</button></div></div>`)}
   function goSpot(k,warp){if(L.mode!=='walk')return;if(L.lost&&k!=='toilet'){big('😱 먼저 '+L.lost.o.r.name+'부터 찾자!',1.6);return}const e=ENTRY[k];
     if(warp){fadeDo(()=>{pet.position.set(e.x,0,e.z+1.2);pet.rotation.set(0,Math.PI,0);walkTarget=null;crewNear();bringStroller();const d=V3(e.x,.75,e.z+1.2);controls.target.copy(d);camera.position.set(e.x,4,e.z+8);controls.update();prompt(k)});return}
     walkTo(V3(e.x,0,e.z));L.goal=k}
@@ -3738,7 +3786,7 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
       else if((r.food??80)<30&&(!L.hungry[r.id]||now-L.hungry[r.id]>30000)){L.hungry[r.id]=now;sayP(o,pick(['배고파…','꼬르륵…','솜사탕 먹고 싶어']),'cry')}
       else if((r.energy??80)<18&&!(L.stroller&&L.stroller.r===r)&&Math.random()<.4)sayP(o,'다리 아파… 유모차 태워줘','cry')}
     for(const [id,dl] of Object.entries(L.potty)){if(now>dl){delete L.potty[id];const o=F.find(x=>x.r.id===id);if(o){o.r.clean=clamp(o.r.clean-30);o.r.potty=0;L.cry[id]=3;sayP(o,'으앙… 실수했어 ㅠㅠ','cry');L.log.push('🚽 '+o.r.name+'가 화장실을 못 참았어');big('😭 '+o.r.name+' 실수… 달래주자',1.8)}}}
-    const cand=F.filter(o=>!o.main&&!(L.stroller&&L.stroller.r===o.r));if(!L.hold&&!L.lost&&cand.length&&now-L.lastLost>50000&&Math.random()<.25){const o=pick(cand);let p;for(let k=0;k<20;k++){const a=rnd(0,6.283),rr=rnd(9,22);p=V3(Math.cos(a)*rr,0,4+Math.sin(a)*rr);if(p.distanceTo(pet.position)>11)break}
+    const cand=F.filter(o=>!o.main&&!(L.stroller&&L.stroller.r===o.r));if(!L.hold&&!L.lost&&cand.length&&now-L.lastLost>50000&&Math.random()<.25){const o=pick(cand);let p;for(let k=0;k<20;k++){const a=rnd(0,6.283),rr=rnd(10,32);p=V3(Math.cos(a)*rr,0,4+Math.sin(a)*rr*.85);if(p.distanceTo(pet.position)>14)break}
       L.lost={o,p,until:now+90000};L.lastLost=now;o.c.mode='scn';o.c.g.position.copy(p);o.c.act={};o.c.cryT=99;const mk=sprite('😭',.7);L.g.add(mk);L.lost.mk=mk;big('😱 '+o.r.name+'가 안 보여!!',2)}
     const bh=Object.keys(L.balloon);if(bh.length&&Math.random()<.05){const id=pick(bh),b=L.balloon[id];delete L.balloon[id];b.userData.fly=1;const o=F.find(x=>x.r.id===id);if(o){L.cry[id]=2;sayP(o,'내 풍선!! 으앙','cry');L.log.push('🎈 '+o.r.name+'가 풍선을 놓쳤어')}}
     if(L.lost&&now>L.lost.until){const o=L.lost.o;L.g.remove(L.lost.mk);L.lost=null;o.c.mode='free';o.c.cryT=0;o.c.g.position.copy(pet.position).add(V3(1,0,1));o.r.love=clamp(o.r.love-3);L.cry[o.r.id]=4;sayP(o,'무서웠어… 으아앙','cry');L.log.push('📢 미아보호소에서 '+o.r.name+'를 데려왔어');big('📢 미아보호소에서 데려왔어… 달래주자',2)}
@@ -3751,23 +3799,30 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
     if(!(L.ride&&L.ride.k==='coaster')){U.cst.u=(U.cst.u+dt*3/U.cst.len)%1;cartAt(U.cst.u)}
     if(!(L.ride&&L.ride.k==='bumper'))for(const c of U.cars){if(Math.random()<dt*.5){c.tx=U.bmp.B.x+rnd(-4,4);c.tz=U.bmp.B.z+rnd(-3,3)}c.vx+=(c.tx-c.m.position.x)*dt*.6;c.vz+=(c.tz-c.m.position.z)*dt*.6;c.vx*=1-dt*.8;c.vz*=1-dt*.8;c.m.position.x=clampv(c.m.position.x+c.vx*dt,U.bmp.B.x-4.4,U.bmp.B.x+4.4);c.m.position.z=clampv(c.m.position.z+c.vz*dt,U.bmp.B.z-3.4,U.bmp.B.z+3.4);c.m.rotation.y=Math.atan2(c.vx,c.vz)}
     U.drops.forEach(d=>{d.userData.t=(d.userData.t+dt*.8)%1;const u=d.userData.t,a=d.userData.a;d.position.set(Math.cos(a)*u*1.8,2+Math.sin(u*Math.PI)*1.2-u*1.4,4+Math.sin(a)*u*1.8)});U.bal.forEach((b,i)=>b.position.y+=Math.sin(t*2+i)*.002);
-    for(const n of U.npc){if(n.w<=0||n.s.position.distanceTo(n.t)<.5){const a=rnd(0,6.283),rr=rnd(5,22);n.t.set(Math.cos(a)*rr,.6,4+Math.sin(a)*rr*.8);n.w=rnd(4,10)}n.w-=dt;const d=n.t.clone().sub(n.s.position);d.y=0;if(d.length()>.1)n.s.position.addScaledVector(d.normalize(),dt*1.2);n.s.position.y=.6+Math.abs(Math.sin(t*6+n.w))*.08}
+    for(const n of U.npc){if(n.w<=0||n.s.position.distanceTo(n.t)<.5){const a=rnd(0,6.283),rr=rnd(5,32);n.t.set(Math.cos(a)*rr,.6,4+Math.sin(a)*rr*.8);n.w=rnd(4,10)}n.w-=dt;const d=n.t.clone().sub(n.s.position);d.y=0;if(d.length()>.1)n.s.position.addScaledVector(d.normalize(),dt*1.2);n.s.position.y=.6+Math.abs(Math.sin(t*6+n.w))*.08}
     for(const [id,b] of Object.entries(L.balloon)){const o=fam().find(x=>x.r.id===id);if(!o)continue;const p=headPos(o,1.9);b.position.set(p.x+.35+Math.sin(t*1.5)*.08,p.y+.9,p.z)}
     L.g.children.forEach(c=>{if(c.userData&&c.userData.fly){c.position.y+=dt*1.5;c.position.x+=dt*.3;if(c.position.y>30)L.g.remove(c)}});
     for(const [id,s] of Object.entries(L.plush)){const o=fam().find(x=>x.r.id===id);if(o){const p=headPos(o,.95);s.position.set(p.x+.28,p.y,p.z+.18)}}
+    for(const [id,s] of Object.entries(L.pin)){const o=fam().find(x=>x.r.id===id);if(o){const p=headPos(o,1.55);s.position.set(p.x+.22,p.y,p.z+.1)}}
+    {const K=U.flw;K.bfl.forEach((b,i)=>{const a=t*.45+i*.9;b.position.set(K.F.x+Math.cos(a)*K.rx*(.55+.45*Math.sin(t*.6+i)),.9+Math.abs(Math.sin(t*6+i))*.45,K.F.z+Math.sin(a*1.2)*K.rz*.85)})}
+    if(!(L.ride&&L.ride.k==='viking'))U.vik.sw.rotation.z=Math.sin(t*1.25)*.6;
+    if(!(L.ride&&L.ride.k==='drop')){const d=U.drp;d.ring.position.y=dropIdle(t,d.top);d.ring.rotation.y+=dt*.3}
+    for(const sg of SIGNS){const d=camera.position.distanceTo(sg.position),o=clampv((d-6)/5,0,1);sg.material.opacity=o;sg.visible=o>.02}
+    {const wk=L.mode==='walk'||(L.ride&&L.ride.k==='flower');controls.maxPolarAngle=wk?1.22:1.52;if(L.md==null)L.md=controls.maxDistance;controls.maxDistance=wk?L.md:60}
     if(L.ride){L.ride.update(dt);return}
     sunFollow(pet.position);
     if(L.stroller&&L.strollerM){const b=pet.position.clone().add(faceDir().multiplyScalar(-1.3));L.strollerM.position.lerp(V3(b.x,0,b.z),Math.min(1,dt*4));L.strollerM.rotation.y=pet.rotation.y;const o=L.stroller;o.c.mode='scn';o.c.g.position.copy(L.strollerM.position).add(V3(0,.5,0));o.c.g.rotation.set(0,pet.rotation.y,0);o.c.act={sit:1};o.r.energy=clamp((o.r.energy??80)+dt*1.2)}
-    if(L.lost){const o=L.lost.o;L.lost.mk.position.set(L.lost.p.x,2.2*o.c.g.scale.x+.3+Math.sin(t*4)*.1,L.lost.p.z);if(pet.position.distanceTo(L.lost.p)<2.4){L.g.remove(L.lost.mk);L.lost=null;o.c.mode='free';o.c.cryT=0;o.r.love=clamp(o.r.love+2);sayP(o,'찾았다!! 흐앙 무서웠어ㅠㅠ','cry');say('찾았다!! 다행이야','happy');fx('💗',5);L.log.push('🔍 '+o.r.name+'를 찾았어!');big('🤗 '+o.r.name+' 찾았다!',2);L.hold=true;refreshHud();const hb=S3D.hud.querySelector('#l-hold');if(hb){hb.classList.add('on');hb.textContent='🤝 손잡기 ON'}}}
+    if(L.lost){const o=L.lost.o;L.lost.mk.position.set(L.lost.p.x,2.2*o.c.g.scale.x+.3+Math.sin(t*4)*.1,L.lost.p.z);if(pet.position.distanceTo(L.lost.p)<2.4){L.g.remove(L.lost.mk);L.lost=null;o.c.mode='free';o.c.cryT=0;o.r.love=clamp(o.r.love+2);sayP(o,'찾았다!! 흐앙 무서웠어ㅠㅠ','cry');say('찾았다!! 다행이야','happy');fx('💗',5);L.log.push('🔍 '+o.r.name+'를 찾았어!');big('🤗 '+o.r.name+' 찾았다!',2);L.hold=true;refreshHud();const hb=S3D.hud.querySelector('#l-hold');if(hb){hb.classList.add('on');hb.textContent='🤝 손잡는 중'}}}
     if(L.goal&&!walkTarget){const k=L.goal;L.goal=null;if(pet.position.distanceTo(ENTRY[k])<2)prompt(k)}
     evAcc+=dt;if(evAcc>=5){evAcc=0;for(const o of fam()){const r=o.r;r.potty=clamp((r.potty??20)+.9);r.energy=clamp((r.energy??80)-.25)}events()}
     if((S.gameMinute||0)>=CLOSE)leave(true)}
+  function dropIdle(tt,top){const c=tt%24;if(c<13)return 1.2+(top-1.2)*(c/13);if(c<15.5)return top;if(c<16.7){const k=(c-15.5)/1.2;return top-(top-1.2)*k*k}return 1.2}
   function afterRender(){if(L&&L.snap){const lb=L.snap;L.snap=null;if(saveAlbum(lb)){L.photos++;flash();big('📸 찰칵!',1)}}}
-  function cleanup(){if(!L)return;if(L.lost){L.lost.o.c.cryT=0}for(const s of Object.values(L.plush))L.g.remove(s);for(const b of Object.values(L.balloon))L.g.remove(b);if(L.strollerM)L.strollerM.visible=false;L=null}
+  function cleanup(){controls.maxPolarAngle=1.52;if(!L)return;if(L.md!=null)controls.maxDistance=L.md;for(const s of Object.values(L.pin||{}))L.g.remove(s);if(L.lost){L.lost.o.c.cryT=0}for(const s of Object.values(L.plush))L.g.remove(s);for(const b of Object.values(L.balloon))L.g.remove(b);if(L.strollerM)L.strollerM.visible=false;L=null}
   /* ---------------- 놀이기구 공통 ---------------- */
   function riders(){return fam().filter(o=>!SCN.hide.has(o.r.id)&&!(L.lost&&L.lost.o.r===o.r))}
-  function startSpot(k){if(k==='snack')return snackPanel();if(k==='balloon')return balloonPanel();if(k==='toilet')return toilet();if(k==='photo')return photo();if(k==='claw')return claw();
-    if(L.stroller)toggleStroller();L.mode='ride';SCN.lockMain=true;controls.enabled=false;({carousel,ferris,coaster,bumper})[k]()}
+  function startSpot(k){if(k==='snack')return snackPanel();if(k==='balloon')return balloonPanel();if(k==='toilet')return toilet();if(k==='photo')return photo();if(k==='claw')return claw();if(k==='flower')return flower();
+    if(L.stroller)toggleStroller();L.mode='ride';SCN.lockMain=true;controls.enabled=false;({carousel,ferris,coaster,bumper,viking,drop})[k]()}
   function endRide(title,lines,min=20){const k=L.ride&&L.ride.k;L.ride=null;L.mode='walk';SCN.lockMain=false;controls.enabled=true;freeAll();if(k)L.rides.push(SP[k].e+' '+SP[k].nm);
     const e=ENTRY[k]||pet.position;pet.position.set(e.x,0,e.z+1);pet.rotation.set(0,Math.PI,0);crewNear();controls.target.set(e.x,.75,e.z+1);camera.position.set(e.x,4,e.z+8);controls.update();try{advanceGameClock(min/GAME_MIN_PER_REAL_SEC)}catch(_){}
     walkHud(`<div class="s-panel"><h3>${title}</h3>${lines.map(l=>`<div>${l}</div>`).join('')}<div class="s-row" style="margin-top:8px"><button id="l-close" class="hot">좋았어!</button></div></div>`)}
@@ -3792,18 +3847,18 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
       lookCam(V3(base.x+4.2,base.y-.2,base.z+8.6),V3(base.x,base.y-1.3,base.z),Math.min(1,dt*5));sunFollow(V3(base.x,0,base.z));if(top()&&!L.ride.topSaid){L.ride.topSaid=1;big('⬆️ 꼭대기다!',1.5);Rd.forEach(o=>sayP(o,isBaby(o.r)?'무서워… 꼭 잡아줘':'와아 높다~!','happy'))}
       if(t>dur){Rd.forEach(o=>{o.r.fun=clamp(o.r.fun+12);o.r.love=clamp(o.r.love+1);o.r.energy=clamp((o.r.energy??80)+4)});endRide('🎡 관람차 끝!',[`사랑해 ${loved}번 · 셀카 ${selfie}장`,...Rd.map(o=>nm(o.r)+': "'+(loved?'꼭대기에서 들은 말 안 잊을 거야 💕':'높이 올라가서 신기했어!')+'"')],30)}}}}
   /* 🎢 롤러코스터 */
-  function cartAt(u){const c=L.U.cst,p=c.curve.getPointAt(u),tg=c.curve.getTangentAt(u);c.cart.position.copy(p).add(V3(0,.12,0));c.cart.lookAt(p.clone().add(tg).add(V3(0,.12,0)));return tg}
+  function cartAt(u){const c=L.U.cst,p=c.curve.getPointAt(u),tg=c.curve.getTangentAt(u);c.cart.position.copy(p).add(V3(0,.12,0));c.cart.lookAt(p.clone().add(tg).add(V3(0,.12,0)));c.cart.updateMatrixWorld(true);return tg}
   function coaster(){const all=riders(),Rd=all.filter(o=>!isBaby(o.r)),W=all.filter(o=>isBaby(o.r));if(!Rd.length){big('🍼 아기 피비는 키가 작아서 못 타…',2);W.forEach(o=>{sayP(o,'나도 타고 싶은데 ㅠㅠ','cry');L.cry[o.r.id]=2});L.mode='walk';SCN.lockMain=false;controls.enabled=true;walkHud();return}
-    const c=L.U.cst;let u=.02,v=3,fear=15,grip=false,cheer=0,started=false,t=0;const hmax=7.4;const st=ENTRY.coaster;
+    const c=L.U.cst;let u=.02,v=3,fear=15,grip=false,cheer=0,started=false,t=0;const hmax=c.hmax;const st=ENTRY.coaster;
     rideHud('🎢 롤러코스터',['<button id="r-grip" class="big">🤝 손 꽉 잡기 (누르고 있기)</button>','<button id="r-up">🙌 만세!</button><button id="r-scr">😆 소리 지르기</button>'],h=>{const g=h.querySelector('#r-grip');g.onpointerdown=e=>{e.preventDefault();grip=true;g.classList.add('on')};g.onpointerup=g.onpointerleave=g.onpointercancel=()=>{grip=false;g.classList.remove('on')};
       h.querySelector('#r-up').onclick=()=>{if(L.ride.drop){big('떨어질 땐 손 잡아!!',1);fear+=8;return}cheer++;Rd.forEach(o=>{o.main?setAnim('banzai',true):(o.c.act={sit:1,armUp:1});sayP(o,pick(['만세~!!','꺄하하!']),'happy');o.r.fun=clamp(o.r.fun+2)})};
       h.querySelector('#r-scr').onclick=()=>{fear=Math.max(0,fear-6);Rd.forEach(o=>sayP(o,pick(['꺄아아아!!','으아아악~!','와아아!']),'happy'))}});
     W.forEach((o,i)=>place(o,V3(st.x-1.5+i*.8,0,st.z+1.5),Math.PI,{anim:'idle',act:{}}));W.forEach(o=>sayP(o,'나도 타고 싶어… ㅠㅠ','cry'));
     const seats=[[-.28,.55],[.28,.55],[-.28,-.15],[.28,-.15],[-.28,-.85],[.28,-.85]];
-    L.ride={k:'coaster',drop:false,update(dt){t+=dt;const tg=cartAt(u),y=c.cart.position.y;if(t>1.2){started=true;v=Math.max(3.2,Math.sqrt(Math.max(0,2*9.8*(hmax-y)))*.85);u+=v*dt/c.len}
+    L.ride={k:'coaster',drop:false,update(dt){t+=dt;const tg=cartAt(u),y=c.cart.position.y;if(t>1.2){started=true;if(u<c.uTop){v=2.7;if(!L.ride.lift){L.ride.lift=1;big('딸깍… 딸깍… ⛓️',1.8)}}else v=Math.max(3.4,Math.sqrt(Math.max(0,2*9.8*(hmax-y)))*.85);u+=v*dt/c.len}
       L.ride.drop=tg.y<-.25;if(L.ride.drop){fear+=(grip?-10:16)*dt;if(Math.random()<dt*1.5)Rd.forEach(o=>sayP(o,grip?pick(['꺄아~ 손 잡아서 괜찮아!','으아아!']):pick(['무서워어어!!','꺄아아악!!']),grip?'happy':'cry'))}else fear=Math.max(0,fear-5*dt);fear=clampv(fear,0,100);
       const q=c.cart.quaternion;Rd.forEach((o,i)=>{const s=seats[i%6];const p=c.cart.localToWorld(V3(s[0],.28,s[1]));placeQ(o,p,q,{anim:o.main&&anim==='banzai'?'banzai':'sit',act:o.c&&o.c.act&&o.c.act.armUp&&!L.ride.drop?o.c.act:{sit:1}})});
-      const cp=c.cart.localToWorld(V3(0,3.3,-5.6)),ct=c.cart.localToWorld(V3(0,1.3,6));lookCam(cp,ct,Math.min(1,dt*5));sunFollow(c.cart.position);info(`😨 무서움 ${Math.round(fear)}%${grip?' · 🤝 꽉!':''}`);
+      const cp=c.cart.localToWorld(V3(0,4.8,-7.8)),ct=c.cart.localToWorld(V3(0,1.1,7));lookCam(cp,ct,Math.min(1,dt*5));sunFollow(c.cart.position);info(`😨 무서움 ${Math.round(fear)}%${grip?' · 🤝 꽉!':''}`);
       if(u>=1.0){const lines=[];Rd.forEach(o=>{if(fear>65){o.r.energy=clamp((o.r.energy??80)-10);o.r.fun=clamp(o.r.fun+8);lines.push(nm(o.r)+': "어지러워… @_@"')}else{o.r.fun=clamp(o.r.fun+24);o.r.love=clamp(o.r.love+.8);o.r.energy=clamp((o.r.energy??80)-4);lines.push(nm(o.r)+': "'+pick(['한 번 더!!','최고야!!','하나도 안 무서웠어!'])+'"')}});
         W.forEach(o=>{L.cry[o.r.id]=2;lines.push('🍼 '+o.r.name+'가 못 타서 울먹여… 달래주거나 간식 사주자')});U_reset();endRide('🎢 롤러코스터 끝!',[`최종 무서움 ${Math.round(fear)}% · 만세 ${cheer}번`,...lines])}}};
     function U_reset(){c.u=.02}
@@ -3818,6 +3873,61 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
         for(let i=0;i<cars.length;i++)for(let j=i+1;j<cars.length;j++){const a=cars[i],b=cars[j],dx=b.m.position.x-a.m.position.x,dz=b.m.position.z-a.m.position.z,d=Math.hypot(dx,dz);if(d<1.5&&d>0){const nx=dx/d,nz=dz/d,rv=(a.vx-b.vx)*nx+(a.vz-b.vz)*nz;if(rv>0){a.vx-=rv*nx;a.vz-=rv*nz;b.vx+=rv*nx;b.vz+=rv*nz;if(rv>1.2){const A=mine.find(m=>m.c===a),Bm=mine.find(m=>m.c===b);if(a===my&&Bm){score++;sayP(Bm.o,pick(['으악!','꺄하하!','복수할 거야~!']),'happy');Bm.o.r.fun=clamp(Bm.o.r.fun+2)}else if(b===my&&A){hitBy++;sayP(A.o,pick(['받아라~!','헤헤 쿵!']),'happy')}else if(a===my||b===my)score++;fx('💥',1);info('화면을 끌어서 운전! 💥 '+score)}}const push=(1.5-d)/2;a.m.position.x-=nx*push;a.m.position.z-=nz*push;b.m.position.x+=nx*push;b.m.position.z+=nz*push}}
         mine.forEach(m=>{const q=m.c.m.quaternion;placeQ(m.o,m.c.m.localToWorld(V3(0,.45,-.15)),q,{anim:'sit',act:{sit:1}})});lookCam(V3(B.x,camera.aspect<1?13:9.5,B.z+(camera.aspect<1?12:9.5)),V3(B.x,0,B.z+.3),Math.min(1,dt*4));sunFollow(B);
         if(t>28){npcs.concat(mine.map(m=>m.c)).forEach(c=>c.npc.visible=true);Rd.forEach(o=>{o.r.fun=clamp(o.r.fun+15);o.r.love=clamp(o.r.love+.8);o.r.energy=clamp((o.r.energy??80)-5)});endRide('🚗 범퍼카 끝!',[`내가 쿵 ${score}번 · 피비들이 쿵 ${hitBy}번`,...Rd.map(o=>nm(o.r)+': "'+(hitBy>score?'우리가 이겼다~!':'다음엔 내가 박을 거야!')+'"')],15)}}}}
+
+  /* 공통: 손 꽉 잡기 버튼 */
+  function gripHud(title,extra,st,bind){rideHud(title,['<button id="r-grip" class="big">🤝 손 꽉 잡기 (누르고 있기)</button>',extra],h=>{const g=h.querySelector('#r-grip');g.onpointerdown=e=>{e.preventDefault();st.grip=true;g.classList.add('on')};g.onpointerup=g.onpointerleave=g.onpointercancel=()=>{st.grip=false;g.classList.remove('on')};bind&&bind(h)})}
+  function noRide(W){big('🍼 아기 피비는 키가 작아서 못 타…',2);W.forEach(o=>{sayP(o,'나도 타고 싶은데 ㅠㅠ','cry');L.cry[o.r.id]=2});L.mode='walk';SCN.lockMain=false;controls.enabled=true;walkHud()}
+  function fearLines(Rd,fear,good){const lines=[];Rd.forEach(o=>{if(fear>65){o.r.energy=clamp((o.r.energy??80)-10);o.r.fun=clamp(o.r.fun+8);lines.push(nm(o.r)+': "어지러워… @_@"')}else{o.r.fun=clamp(o.r.fun+good);o.r.love=clamp(o.r.love+.8);o.r.energy=clamp((o.r.energy??80)-4);lines.push(nm(o.r)+': "'+pick(['한 번 더!!','최고야!!','하나도 안 무서웠어!','또 타자 또 타자~'])+'"')}});return lines}
+  /* 🏴‍☠️ 바이킹 */
+  function viking(){const Rd=riders(),K=L.U.vik,st={grip:false};let t=0,fear=12,cheer=0,peak=false;const dur=30,T=5,AMP=1.2,bm=Rd.some(o=>isBaby(o.r))?1.35:1;
+    gripHud('🏴‍☠️ 바이킹','<button id="r-up">🙌 만세!</button><button id="r-scr">😆 소리 지르기</button>',st,h=>{
+      h.querySelector('#r-up').onclick=()=>{if(L.ride.high){big('높을 땐 손 잡아!!',1);fear+=8;return}cheer++;Rd.forEach(o=>{o.main?setAnim('banzai',true):(o.c.act={sit:1,armUp:1});sayP(o,pick(['만세~!!','꺄하하!']),'happy');o.r.fun=clamp(o.r.fun+2)})};
+      h.querySelector('#r-scr').onclick=()=>{fear=Math.max(0,fear-6);Rd.forEach(o=>sayP(o,pick(['꺄아아아!!','으아아~!','우와아아!']),'happy'))}});
+    K.front.forEach((f,i)=>f.visible=i>=Rd.length);const q=new THREE.Quaternion();Rd.forEach(o=>sayP(o,pick(['배 타러 가자~','해적이다!','두근두근…']),'happy'));
+    L.ride={k:'viking',high:false,update(dt){t+=dt;const amp=t<12?AMP*t/12:t<20?AMP:Math.max(0,AMP*(1-(t-20)/(dur-20)));const ang=amp*Math.sin(t*6.283/T);K.sw.rotation.z=ang;K.sw.updateMatrixWorld(true);
+      if(amp>=AMP&&!peak){peak=true;big('⬆️ 제일 높이까지!',1.4)}const high=Math.abs(ang)>.8;L.ride.high=high;
+      if(high){fear+=(st.grip?-7:14)*dt*bm;if(Math.random()<dt*1.4)Rd.forEach(o=>sayP(o,st.grip?pick(['꺄아~ 손 잡아서 괜찮아!','붕 뜬다~!']):pick(['무서워어어!!','꺄아아악!!','떨어질 것 같아!']),st.grip?'happy':'cry'))}else fear=Math.max(0,fear-4*dt);fear=clampv(fear,0,100);
+      K.boat.getWorldQuaternion(q);Rd.forEach((o,i)=>{const p=K.boat.localToWorld(V3(K.seatX[i%K.seatX.length],.64,.74));placeQ(o,p,q,{anim:o.main&&anim==='banzai'?'banzai':'sit',act:o.c&&o.c.act&&o.c.act.armUp&&!high?o.c.act:{sit:1}})});
+      lookCam(V3(K.V.x,4.4,K.V.z+(camera.aspect<1?21:14.5)),V3(K.V.x,3.6,K.V.z),Math.min(1,dt*4));sunFollow(K.V);info(`😨 무서움 ${Math.round(fear)}%${st.grip?' · 🤝 꽉!':''}`);
+      if(t>=dur){K.sw.rotation.z=0;K.front.forEach(f=>f.visible=true);endRide('🏴‍☠️ 바이킹 끝!',[`최종 무서움 ${Math.round(fear)}% · 만세 ${cheer}번`,...fearLines(Rd,fear,22)])}}}}
+  /* 🗼 자이로드롭 */
+  function drop(){const all=riders(),Rd=all.filter(o=>!isBaby(o.r)),W=all.filter(o=>isBaby(o.r));if(!Rd.length)return noRide(W);
+    const K=L.U.drp,st={grip:false},e=ENTRY.drop;let ph='board',t=0,y=1.2,v=0,bv=0,fear=10,looked=0;const wait=rnd(2,4.5);
+    gripHud('🗼 자이로드롭','<button id="r-look">👉 저기 봐!</button><button id="r-scr">😆 소리 지르기</button>',st,h=>{
+      h.querySelector('#r-look').onclick=()=>{if(ph!=='up'&&ph!=='top'){big('올라가면 보여줄게!',1);return}looked++;Rd.forEach((o,i)=>setTimeout(()=>L&&sayP(o,pick(y>14?['놀이공원이 다 보여!','관람차가 작아 보여~','구름 만질 수 있겠다']:['사람들 작아진다!','롤러코스터 보여!','분수다~']),'happy'),i*300));Rd.forEach(o=>o.r.fun=clamp(o.r.fun+2))};
+      h.querySelector('#r-scr').onclick=()=>{fear=Math.max(0,fear-5);Rd.forEach(o=>sayP(o,pick(['꺄아아아!!','으아아~!']),'happy'))}});
+    W.forEach((o,i)=>place(o,V3(e.x-1.2+i*.8,0,e.z+1.2),Math.PI,{anim:'idle',act:{}}));W.forEach(o=>sayP(o,'나도 타고 싶어… ㅠㅠ','cry'));
+    K.seats.forEach((s,i)=>s.n.visible=i>=Rd.length);K.ring.position.y=1.2;Rd.forEach(o=>sayP(o,pick(['엄청 높다…','두근두근','손 꼭 잡아줘']),'happy'));
+    L.ride={k:'drop',update(dt){t+=dt;
+      if(ph==='board'){if(t>1.6){ph='up';t=0;big('⬆️ 올라간다…',1.4)}}
+      else if(ph==='up'){y=Math.min(K.top,1.2+t*1.5);K.ring.rotation.y+=dt*.35;fear+=dt*.7;if(y>=K.top){ph='top';t=0;big('😳 두근… 두근…',1.6);Rd.forEach(o=>sayP(o,pick(['너무 높아…','심장이 쿵쾅쿵쾅','우리 집 보여!']),'happy'))}}
+      else if(ph==='top'){fear+=dt*3;if(t>wait){ph='fall';t=0;v=0;big('💨 슈우우웅—!!',1.2)}}
+      else if(ph==='fall'){v+=dt*21;y-=v*dt;fear+=(st.grip?-4:30)*dt;if(Math.random()<dt*3)Rd.forEach(o=>sayP(o,st.grip?pick(['꺄아~ 손 잡아서 괜찮아!','슈웅~!']):pick(['으아아아악!!','꺄아아아!!']),st.grip?'happy':'cry'));if(y<=6){ph='brake';t=0;bv=v}}
+      else if(ph==='brake'){const k=Math.min(1,t/1.4);v=bv*(1-k);y=Math.max(1.2,y-v*dt);if(k>=1){y=1.2;ph='done';t=0}}
+      else if(ph==='done'&&t>1.3){K.seats.forEach(s=>s.n.visible=true);const lines=fearLines(Rd,fear,24);W.forEach(o=>{L.cry[o.r.id]=2;lines.push('🍼 '+o.r.name+'가 못 타서 울먹여… 달래주거나 간식 사주자')});endRide('🗼 자이로드롭 끝!',[`최종 무서움 ${Math.round(fear)}% · 구경 ${looked}번`,...lines],15);return}
+      fear=clampv(fear,0,100);K.ring.position.y=y;K.ring.updateMatrixWorld(true);const c=K.ring.position;
+      Rd.forEach((o,i)=>{const p=K.seats[i%10].s.localToWorld(V3(0,.02,.06));place(o,p,Math.atan2(p.x-c.x,p.z-c.z),{anim:'sit',act:{sit:1}})});
+      const mid=K.seats[Math.floor((Math.min(Rd.length,10)-1)/2)].s.localToWorld(V3(0,.4,0)),dir=V3(mid.x-c.x,0,mid.z-c.z).normalize();let cp,ct;
+      if(ph==='top'){cp=mid.clone().addScaledVector(dir,camera.aspect<1?8:6).add(V3(0,4.2,0));ct=mid.clone().add(V3(0,-1.2,0))}
+      else{cp=mid.clone().addScaledVector(dir,camera.aspect<1?9.5:7).add(V3(0,1.8,0));ct=mid.clone().add(V3(0,.5,0))}
+      lookCam(cp,ct,Math.min(1,dt*(ph==='fall'||ph==='brake'?14:4)));sunFollow(V3(c.x,0,c.z));info(`😨 무서움 ${Math.round(fear)}%${st.grip?' · 🤝 꽉!':''} · 높이 ${Math.round(y*2)}m`)}}}
+  /* 🌷 꽃길 산책로 */
+  function flower(){const Rd=riders(),K=L.U.flw;let wi=1,laps=0,t=0,sniff=0,gifts=0,shots=0,cd=0,chat=5,gi=0;
+    if(L.stroller)toggleStroller();L.mode='ride';SCN.lockMain=false;controls.enabled=true;L.hold=true;
+    pet.position.copy(K.pts[0]);pet.rotation.set(0,Math.PI,0);crewNear();controls.target.set(pet.position.x,.8,pet.position.z);camera.position.set(pet.position.x+5.5,6.8,pet.position.z+(camera.aspect<1?8.5:6.5));controls.update();walkGoal={type:'flower'};walkTarget=K.pts[1].clone();
+    const finish=()=>{walkTarget=null;walkGoal=null;const lines=Rd.map(o=>{o.r.fun=clamp(o.r.fun+10+Math.min(6,sniff));o.r.energy=clamp((o.r.energy??80)+8);o.r.love=clamp(o.r.love+1.5);return nm(o.r)+': "'+pick(['꽃냄새 아직도 나~','나비 또 보고 싶어','손잡고 걸어서 좋았어 💕'])+'"'});
+      endRide('🌷 꽃길 산책 끝!',[`${laps}바퀴 · 향기 ${sniff}번 · 꽃 선물 ${gifts}개 · 사진 ${shots}장`,...lines],20)};
+    rideHud('🌷 꽃길 산책로',['<button id="r-sn">🌸 향기</button><button id="r-gf">💐 꽃 선물</button><button id="r-bf">🦋 나비!</button>','<button id="r-sh">📸 찰칵</button><button id="r-end">🏁 산책 끝</button>'],h=>{
+      h.querySelector('#r-sn').onclick=()=>{if(cd>0)return;cd=2.2;sniff++;Rd.forEach((o,i)=>setTimeout(()=>{if(!L)return;sayP(o,pick(['음~ 꽃향기 좋아','킁킁 달콤해~','이 꽃 이름 뭐야?','에취! 헤헤']),'happy');o.r.fun=clamp(o.r.fun+2);o.r.energy=clamp((o.r.energy??80)+1.5)},i*300));fx('🌸',3)};
+      h.querySelector('#r-gf').onclick=()=>{const o=Rd[gi++%Rd.length];if(L.pin[o.r.id])L.g.remove(L.pin[o.r.id]);const f=sprite(pick(['🌸','🌼','🌷','🌺']),.34);L.g.add(f);L.pin[o.r.id]=f;gifts++;o.r.love=clamp(o.r.love+1.5);o.r.fun=clamp(o.r.fun+4);sayP(o,pick(['나 주는 거야? 고마워!! 💕','머리에 꽂아줘~','예쁘다 예뻐!']),'happy');fx('💗',3)};
+      h.querySelector('#r-bf').onclick=()=>{if(cd>0)return;cd=2;Rd.forEach((o,i)=>setTimeout(()=>{if(!L)return;if(o.main)setAnim('hop',true);sayP(o,pick(['나비다!!','잡을 수 있을 것 같아!','팔랑팔랑~']),'happy');o.r.fun=clamp(o.r.fun+3)},i*250))};
+      h.querySelector('#r-sh').onclick=()=>{if(shots>=3){big('사진은 3장까지!',1);return}shots++;L.snap='🌷 꽃길 산책'};h.querySelector('#r-end').onclick=finish});
+    big('🌷 손잡고 천천히 걸어보자',1.8);Rd.forEach(o=>sayP(o,pick(['꽃이 엄청 많아!','우와 예쁘다~','손 잡고 걷자!']),'happy'));
+    L.ride={k:'flower',input(){return true},update(dt){t+=dt;cd=Math.max(0,cd-dt);chat-=dt;
+      if(!walkTarget||Math.hypot(pet.position.x-walkTarget.x,pet.position.z-walkTarget.z)<1){wi=(wi+1)%K.pts.length;if(wi===1){laps++;if(laps>=2){finish();return}big('🌷 '+laps+'바퀴!',1)}walkGoal={type:'flower'};walkTarget=K.pts[wi].clone()}
+      if(anim!=='idle'&&anim!=='hop'&&anim!=='eat'&&!phys.held)setAnim('idle');
+      if(chat<=0){chat=rnd(5,8);const o=pick(Rd);sayP(o,pick(['꽃 예쁘다~','저기 나비 있어!','여기 사진 찍자','천천히 걸으니까 좋다','이 꽃 우리 집에도 심고 싶어']),'happy')}
+      Rd.forEach(o=>{o.r.energy=clamp((o.r.energy??80)+dt*.25)});sunFollow(pet.position)}}}
   /* 🧸 인형뽑기 */
   function claw(){L.mode='ride';SCN.lockMain=true;controls.enabled=false;const M=L.U.claws[0],Wc=SP.claw.c;let x=0,dir=1,phase='move',y=1.75,grab=null,tries=0,wins=0;
     const Rd=riders();Rd.forEach((o,i)=>place(o,V3(Wc.x-1.2+i*.8,0,Wc.z+2.2),Math.PI,{anim:'idle',act:{}}));
@@ -3850,6 +3960,195 @@ window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
     hudRender({title:closing?'🌙 폐장 시간이야!':'🏠 집에 가자',info:'',fam:'',alert:'',panel:`<div class="s-panel"><h3>오늘의 피비랜드</h3><div>탄 것: ${rides.length?rides.join(', '):'없음'}</div><div>간식 ${L.snacks}개 · 사진 ${L.photos}장 · 쓴 돈 ${won(L.spent)}</div>${L.log.map(l=>`<div>${l}</div>`).join('')}${F.map(o=>`<div>${nm(o.r)} · 기분 ${Math.round(o.r.fun)} · 호감도 ${Math.round(o.r.love)} · 에너지 ${Math.round(o.r.energy??80)}</div>`).join('')}${sleepy.length?`<div>😴 ${sleepy.map(o=>o.r.name).join(', ')}는 집에 가는 길에 잠들었어</div>`:''}</div>`,rows:['<button id="l-home" class="hot">🏠 집 도착!</button>'],
       bind:h=>h.querySelector('#l-home').onclick=()=>exitVenue(()=>{say(pick(['오늘 진짜 재밌었다!!','또 가자 또 가자~','놀이공원 최고야 💕']),'happy');for(const c of CR.values())setTimeout(()=>{try{cSay(c,pick(['헤헤 재밌었어','또 갈래!','졸려…']),'happy')}catch(_){}},600)})})}
   window.__land={get L(){return L},go:k=>startSpot(k),warp:k=>goSpot(k,true),ev:()=>events()};
+})();
+</script>
+<script id="jobs3d">
+/* ===== 💼 피비랑 같이 하는 3D 알바 (피비버거 · 마트 홍보 · 딸기 농장) ===== */
+(function(){
+  const {V3,rnd,clampv,hudRender,info,big,fam,sayP,place,lookCam,sky,ground,tree,enterVenue,exitVenue,sunFollow}=S3D;
+  const nm=r=>(r.color||'')+r.name,ET={},et=ch=>ET[ch]||(ET[ch]=emojiTex(ch));
+  const PEOPLE=['🧑','👩','👨','👧','👦','👵','👴','🧒','🧑‍🦱','👩‍🦰','🧓','👱'];
+  const portrait=()=>camera.aspect<1;
+  function scr(v){const p=v.clone().project(camera),r=renderer.domElement.getBoundingClientRect();return{x:r.left+(p.x+1)/2*r.width,y:r.top+(1-p.y)/2*r.height}}
+  function label(txt,w,bg,fg){const s=textSprite(txt,w,{w:512,h:128,bg:bg||'#ffffff',fg:fg||'#3b2f63',size:58});s.material.transparent=true;s.userData.t=txt;return s}
+  function relabel(s,txt,bg,fg){if(s.userData.t===txt)return;s.userData.t=txt;const o=s.material.map;s.material.map=textTex(txt,512,128,bg||'#ffffff',fg||'#3b2f63',58);s.material.needsUpdate=true;if(o)o.dispose()}
+  function esp(ch,sz){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:et(ch),transparent:true,depthWrite:false}));s.scale.setScalar(sz);return s}
+  function setE(s,ch){if(s.userData.e===ch)return;s.userData.e=ch;s.material.map=et(ch);s.material.needsUpdate=true}
+  function stripeTex(a,b,n=8){const c=document.createElement('canvas');c.width=128;c.height=16;const x=c.getContext('2d');for(let i=0;i<n;i++){x.fillStyle=i%2?a:b;x.fillRect(i*128/n,0,128/n+1,16)}const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t}
+  const able=r=>r&&!r.sick&&(r.energy??80)>=12&&!isAtSchool(r);
+  // 피비 배치: 대표는 anim + 팔 포즈(mainPairAct), 친구는 act
+  function put(o,p,ry,a,mAnim){place(o,p,ry,{anim:mAnim||'idle',act:a||{}});if(o.main)mainPairAct=a&&(a.armUp!=null||a.armFwd!=null)?{armUp:a.armUp,armFwd:a.armFwd}:null}
+  function sitRest(rest,f,ry){rest.forEach((o,i)=>put(o,f(i),ry||0,{sit:1},'sit'))}
+
+  function begin(key,build,setup){
+    if(!S.adopted){toast('먼저 피비를 데려와줘');return}if(S.sleeping){toast('💤 다들 자는 중이야');return}if(WALK){toast('지금은 외출 중이야');return}
+    const m=S.gameMinute||0;if(m<420||m>=1320){toast('🌙 알바는 07:00~22:00에만 할 수 있어');return}
+    if(!able(S)){const i=S.crew.findIndex(able);if(i<0){toast('😪 같이 일할 수 있는 피비가 없어 · 먼저 밥 먹이고 쉬게 해주자');return}swapMain(i,true)}
+    try{$('jobbox').classList.remove('show')}catch(_){}
+    try{if(typeof PAIRS!=='undefined')PAIRS.slice().forEach(P=>endPair(P,false))}catch(_){}
+    enterVenue('arena_job_'+key,build,g=>{const T=fam().filter(o=>able(o.r)),rest=fam().filter(o=>!T.includes(o));mainPairAct=null;const md=controls.maxDistance;controls.maxDistance=60;setup(g,T,rest);const c0=SCN&&SCN.cleanup;if(SCN)SCN.cleanup=()=>{controls.maxDistance=md;mainPairAct=null;try{c0&&c0()}catch(_){}}})}
+
+  function payout(T,earn,title,lines,again){earn=Math.max(0,Math.round(earn/10)*10);S.money+=earn;
+    T.forEach(o=>{const r=o.r;r.energy=clamp((r.energy??80)-12);r.food=clamp((r.food??80)-8);r.fun=clamp((r.fun??80)+6);r.love=clamp((r.love??50)+1.5);if(typeof sulkEase==='function')sulkEase(r,60);gainPebi(r,5)});
+    try{advanceGameClock(60/GAME_MIN_PER_REAL_SEC)}catch(_){}
+    addDiary('job3d_'+title,'💼 피비들이랑 처음 '+title+' 알바를 했어');mainPairAct=null;save();renderUI();
+    T.forEach((o,i)=>setTimeout(()=>sayP(o,earn>=3000?pick(['수고했어~!','우리 돈 많이 벌었다!','헤헤 뿌듯해','다음에 또 하자!']):pick(['다음엔 더 잘할 수 있어!','힝… 그래도 재밌었어','수고했어~']),'happy'),300+i*400));
+    hudRender({title:'💼 '+title+' 끝!',info:'',fam:'',alert:'',panel:`<div class="s-panel"><h3>💰 +${won(earn)}</h3>${lines.map(l=>`<div>${l}</div>`).join('')}<div style="margin-top:6px;font-size:.84rem">같이 일한 피비: ${T.map(o=>nm(o.r)).join(', ')}<br>에너지 -12 · 배부름 -8 · 기분·호감도·경험치 ↑ · 게임 시간 1시간</div></div>`,
+      rows:['<button id="j-again" class="hot">🔁 한 번 더</button><button id="j-exit">🏠 집으로</button>'],bind:h=>{h.querySelector('#j-again').onclick=()=>exitVenue(()=>setTimeout(again,700));h.querySelector('#j-exit').onclick=()=>exitVenue()}})}
+
+  /* ======================= 🍔 피비버거 ======================= */
+  const BST=[{k:'🍔',nm:'버거',x:-2.85,t:2.4,p:900},{k:'🍟',nm:'감튀',x:-.95,t:1.7,p:600},{k:'🥤',nm:'음료',x:.95,t:1.1,p:400},{k:'🍦',nm:'아이스',x:2.85,t:1.4,p:500}];
+  function buildBurger(){const g=new THREE.Group();
+    ground(g,16,(x,W)=>{const n=16;for(let i=0;i<n;i++)for(let j=0;j<n;j++){x.fillStyle=(i+j)%2?'#fff4e6':'#ffd6d6';x.fillRect(i*W/n,j*W/n,W/n+1,W/n+1)}});
+    bx(g,22,7,.3,0xfff1d6,0,3.5,-5.4);for(const s of[-1,1])bx(g,.3,7,16,0xffe7c2,s*11,3.5,2.6);
+    for(const x of[-8,8]){bx(g,3.2,2,.1,0xbfe9ff,x,3.8,-5.2);bx(g,3.4,.15,.2,0xffffff,x,2.75,-5.2)}
+    const bd=label('🍔 피비버거',4,'#ff5c5c','#ffffff');bd.position.set(0,5.4,-5.1);g.add(bd);
+    const mn=textSprite('🍔900  🍟600  🥤400  🍦500',4.6,{w:1024,h:128,bg:'#3b2f63',fg:'#ffffff',size:60});mn.material.transparent=true;mn.position.set(0,4.3,-5.1);g.add(mn);
+    // 주방
+    bx(g,8,.9,1.2,0xdfe4ee,0,.45,-2.6);
+    bx(g,1.6,.08,1,0x2e2e38,-2.85,.94,-2.6);for(let k=0;k<3;k++)sp_(g,.18,0x8a5a3a,-3.3+k*.45,1.02,-2.6,1,.35,1);
+    bx(g,1.5,.3,.9,0xc0c6d4,-.95,1.05,-2.6);for(const dx of[-.35,.35])bx(g,.46,.28,.5,0xffd24d,-.95+dx,1.32,-2.6);
+    bx(g,1.3,1.6,.8,0x8fd3f2,.95,1.7,-2.8);for(const dx of[-.35,0,.35])cy(g,.06,.06,.25,0x3b2f63,.95+dx,1.05,-2.45);
+    bx(g,1.2,1.5,.8,0xffc9df,2.85,1.65,-2.8);sp_(g,.28,0xfff6e8,2.85,2.55,-2.8);
+    const stl=BST.map(s=>{const e=esp(s.k,.7);e.position.set(s.x,3.25,-2.6);g.add(e);return e});
+    // 카운터 · 쟁반 · 계산대
+    bx(g,8,1.05,1.1,0xff6b6b,0,.52,.9);bx(g,8.3,.1,1.35,0xfff3d6,0,1.1,.9);bx(g,.8,.5,.6,0x3b2f63,-2.4,1.4,.9);bx(g,1.9,.06,1.1,0xc98d5a,0,1.18,.9);
+    for(const x of[-6.5,6.5]){cy(g,.8,.8,.08,0xffffff,x,.9,4.5,20);cy(g,.08,.08,.9,0xb0b6c4,x,.45,4.5)}
+    g.userData={stl};return g}
+  function burger(){begin('burger',buildBurger,(g,T,rest)=>{
+    const U=g.userData,tmp=[],add=o=>{g.add(o);tmp.push(o);return o};
+    const W=T.map((o,i)=>({o,q:[],cur:null,pos:V3(BST[i%4].x+(i>=4?.6:0),0,-1.1),home:i%4,off:i>=4?.6:0,boost:0}));
+    const wOf=s=>W[s%W.length];
+    const trayG=add(new THREE.Group());let tray=[];
+    const C=[];let left=75,earn=0,served=0,missed=0,wrong=0,spawnT=.4,done=false,praiseCd=0,tI=0,lastF=null;
+    const SLOT=[V3(0,0,2.4),V3(1.25,0,3.3),V3(2.4,0,4.1),V3(3.4,0,4.9)];
+    const bubble=add(label(' ',2.3));bubble.visible=false;
+    const oStr=o=>o.map(s=>BST[s].k).join('');
+    function trayDraw(){while(trayG.children.length)trayG.remove(trayG.children[0]);tray.forEach((s,i)=>{const sp=esp(BST[s].k,.46);sp.position.set(-.6+(i%4)*.4,1.45+Math.floor(i/4)*.32,.85);trayG.add(sp)});pan()}
+    const front=()=>C.find(c=>c.st==='q');
+    function newCust(){const sp=add(esp(pick(PEOPLE),1.25));sp.position.set(6,1,6.5);const r=Math.random(),n=r<Math.min(.55,.12+(75-left)/110)?3:r<.6?2:1;const order=[];for(let i=0;i<n;i++)order.push(Math.floor(Math.random()*4));order.sort((a,b)=>a-b);const max=13+n*5;C.push({sp,order,pat:max,max,st:'q',happy:0})}
+    const inf=()=>`⏱ ${Math.ceil(left)}초 · 💰 ${won(earn)} · 😋 ${served}명`;
+    function pan(){const e=S3D.hud.querySelector('#j-pan');if(!e)return;const f=front(),busy=W.reduce((n,w)=>n+w.q.length+(w.cur?1:0),0);e.innerHTML=`🧾 주문 <b>${f?oStr(f.order):'기다리는 중…'}</b><br>🍽️ 쟁반 <b>${tray.length?oStr(tray):'비어 있음'}</b>${busy?` · 👩‍🍳 만드는 중 ${busy}개`:''}`}
+    function hud(){hudRender({title:'🍔 피비버거 알바',info:inf(),fam:'',alert:'',panel:'<div class="s-panel" id="j-pan" style="padding:7px 11px;font-size:.92rem;line-height:1.5"></div>',
+      rows:[BST.map((s,i)=>`<button data-st="${i}">${s.k} ${s.nm}</button>`).join(''),'<button id="j-clr">🗑️</button><button id="j-srv" class="hot">🛎️ 내주기</button><button id="j-pr">💕 칭찬</button><button id="j-quit">🏠</button>'],
+      bind:h=>{h.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>cook(+b.dataset.st));h.querySelector('#j-clr').onclick=()=>{tray=[];trayDraw()};h.querySelector('#j-srv').onclick=serve;h.querySelector('#j-pr').onclick=praise;h.querySelector('#j-quit').onclick=()=>finish()}});pan()}
+    function cook(s){if(done)return;const busy=W.reduce((n,w)=>n+w.q.length+(w.cur?1:0),0);if(busy+tray.length>=7){big('쟁반이 꽉 찼어!',1);return}const w=wOf(s);w.q.push(s);if(Math.random()<.3)sayP(w.o,pick(['알겠어요~!',BST[s].k+' 만들게!','맡겨줘!']),'happy');pan()}
+    function serve(){if(done)return;const f=front();if(!f){big('손님이 없어~',1);return}if(!tray.length){big('쟁반이 비었어',1);return}
+      const a=[...tray].sort((x,y)=>x-y);if(a.length===f.order.length&&a.every((v,i)=>v===f.order[i])){const pay=f.order.reduce((n,s)=>n+BST[s].p,0),tip=Math.round(pay*.5*f.pat/f.max/100)*100;earn+=pay+tip;served++;f.st='out';f.happy=1;tray=[];trayDraw();
+        relabel(bubble,'😋 +'+won(pay+tip));big(tip>=300?'💖 팁까지 받았다! +'+won(pay+tip):'🛎️ +'+won(pay+tip),1);W.forEach((w,i)=>setTimeout(()=>{if(!done)sayP(w.o,pick(['감사합니다~!','또 오세요!','맛있게 드세요~']),'happy')},i*250))}
+      else{wrong++;f.pat=Math.max(1,f.pat-4);big('🤔 주문이랑 달라!',1.1);sayP(pick(W).o,'앗, 다시 만들게요!','sulk')}info(inf())}
+    function praise(){if(done)return;if(praiseCd>0){big('조금 있다가 또 칭찬해줘 '+Math.ceil(praiseCd)+'초',.9);return}praiseCd=10;W.forEach((w,i)=>{w.boost=6;w.o.r.love=clamp(w.o.r.love+.6);setTimeout(()=>{if(!done)sayP(w.o,pick(['헤헤 더 빨리 할게!','칭찬 최고~!','힘이 난다!']),'happy')},i*200)});big('💕 피비들 속도 UP!',1.2)}
+    function finish(){if(done)return;done=true;bubble.visible=false;C.forEach(c=>c.sp.visible=false);payout(T,earn,'피비버거',[`😋 손님 ${served}명 · 😠 놓친 손님 ${missed}명 · 🤔 잘못 낸 주문 ${wrong}번`],burger)}
+    newCust();hud();big('주문 보고 버튼을 눌러 피비한테 요리 시키기!',2.6);W.forEach((w,i)=>setTimeout(()=>sayP(w.o,pick(['오늘 열심히 할게!','앞치마 입었다~','손님 기다리는 중!']),'happy'),400+i*350));
+    SCN={lockMain:true,input:()=>true,cleanup(){tmp.forEach(o=>g.remove(o));U.stl.forEach(e=>e.scale.setScalar(.75));mainPairAct=null},update(dt){
+      const now=performance.now()/1000;lookCam(V3(0,portrait()?7.4:5.4,portrait()?14.8:10.5),V3(0,1.4,-.8),Math.min(1,dt*4));sunFollow(V3(0,0,0));sitRest(rest,i=>V3(-3.6+(i%3)*.9,0,3.4+Math.floor(i/3)*.8),.3);
+      if(done){W.forEach(w=>put(w.o,w.pos,0,{hop:6,armUp:1},'banzai'));return}
+      left-=dt;if(left<=0){finish();return}praiseCd=Math.max(0,praiseCd-dt);
+      spawnT-=dt;if(spawnT<=0){spawnT=rnd(4.2,7)-Math.min(2,(75-left)/35);if(C.filter(c=>c.st==='q').length<4)newCust()}
+      let qi=0;for(const c of C.slice()){if(c.st==='q'){const sl=SLOT[Math.min(qi,3)];c.sp.position.lerp(V3(sl.x,1,sl.z),Math.min(1,dt*3));c.pat-=dt*(qi===0?1:.45);if(c.pat<=0){c.st='out';c.happy=-1;missed++;big('😠 손님이 기다리다 가버렸어…',1.2)}qi++}
+        else{c.sp.position.x+=dt*4.2;c.sp.position.z+=dt*1.5;c.sp.position.y=1+(c.happy>0?Math.abs(Math.sin(now*9))*.18:0);if(c.happy<0)setE(c.sp,'😠');if(c.sp.position.x>12){g.remove(c.sp);C.splice(C.indexOf(c),1)}}}
+      const f=front();if(f!==lastF){lastF=f;pan();if(f){const w=pick(W);sayP(w.o,pick(['어서 오세요~!','피비버거입니다!','주문하시겠어요?']),'happy')}}
+      if(f){bubble.visible=true;bubble.position.copy(f.sp.position).add(V3(0,1.25,0));const k=f.pat/f.max;relabel(bubble,oStr(f.order)+' '+(k>.5?'😊':k>.25?'😐':'😤'),k>.25?'#ffffff':'#ffe0e6')}
+      else if(!C.some(c=>c.happy>0&&c.sp.position.x<3))bubble.visible=false;else bubble.position.copy(C.find(c=>c.happy>0).sp.position).add(V3(0,1.25,0));
+      const cooking=new Set();
+      W.forEach((w,i)=>{w.boost=Math.max(0,w.boost-dt);if(!w.cur&&w.q.length)w.cur={s:w.q.shift(),t:0};
+        const tgt=w.cur?V3(BST[w.cur.s].x,0,-1.5):V3(BST[w.home].x+w.off,0,-1.1),d=tgt.clone().sub(w.pos);d.y=0;const dist=d.length(),moving=dist>.08;let ry=0,a={},m='idle';
+        if(moving){ry=Math.atan2(d.x,d.z);w.pos.addScaledVector(d.normalize(),Math.min(dist,dt*3.4));a={walk:1};m='hop'}
+        else if(w.cur){ry=Math.PI;cooking.add(w.cur.s);w.cur.t+=dt*(w.boost>0?1.7:1)*(1+Math.min(.3,(w.o.r.lv||1)*.01));a={armFwd:.8,hop:w.boost>0?14:0};
+          if(w.cur.t>=BST[w.cur.s].t){tray.push(w.cur.s);trayDraw();if(Math.random()<.35)sayP(w.o,pick([BST[w.cur.s].k+' 나왔습니다~','완성!','맛있게 됐다!']),'happy');w.cur=null}}
+        else if(w.boost>0)a={hop:10};
+        put(w.o,w.pos,ry,a,m)});
+      U.stl.forEach((e,i)=>e.scale.setScalar(cooking.has(i)?.75+Math.abs(Math.sin(now*8))*.18:.75));
+      tI+=dt;if(tI>.25){tI=0;info(inf())}}};
+  })}
+
+  /* ======================= 🛒 마트 홍보 ======================= */
+  function buildMart(){const g=new THREE.Group();sky(g,'#8fd0ff','#eef9ff');
+    ground(g,26,(x,W)=>{const P=v=>(v+26)/52*W;x.fillStyle='#9fd98a';x.fillRect(0,0,W,W);x.fillStyle='#ece5d8';x.fillRect(0,P(-2.3),W,P(4.4)-P(-2.3));x.fillStyle='#d9cfbf';for(let i=0;i<30;i++)x.fillRect(P(-26+i*1.8),P(-2.3),2,P(4.4)-P(-2.3));
+      x.fillStyle='#6b6f7a';x.fillRect(0,P(4.8),W,P(10.5)-P(4.8));x.fillStyle='#ffffff';for(let i=0;i<14;i++)x.fillRect(P(-26+i*4),P(7.5),W/52*2,5)});
+    bx(g,17,5.4,5,0xf7f3ff,0,2.7,-4.9);bx(g,17.4,.45,5.4,0x3fb6ff,0,5.5,-4.9);
+    const aw=new THREE.Mesh(new THREE.BoxGeometry(15,.15,1.7),new THREE.MeshToonMaterial({map:stripeTex('#3fb6ff','#ffffff',14),gradientMap:GRAD}));aw.position.set(0,3.3,-1.75);aw.rotation.x=.25;g.add(aw);
+    bx(g,2.5,2.8,.12,0xbfe9ff,0,1.4,-2.35);bx(g,2.8,.2,.2,0xffffff,0,2.85,-2.3);
+    for(const x of[-5,5]){bx(g,4.2,1.9,.1,0xdff4ff,x,1.7,-2.35);['🍓','🥛','🍞','🍎','🥕','🍌'].slice(x<0?0:3,x<0?3:6).forEach((e,i)=>{const s=esp(e,.7);s.position.set(x-1.2+i*1.2,1.6,-2.2);g.add(s)})}
+    const sg=label('🛒 피비마트',5,'#3fb6ff','#ffffff');sg.position.set(0,4.6,-2.3);g.add(sg);
+    const b1=label('🎉 오늘만 반값!',2.8,'#ff5c8a','#ffffff');b1.position.set(-5.2,3.9,-2.1);g.add(b1);const b2=label('🍓 딸기 1+1',2.8,'#ffb84d','#ffffff');b2.position.set(5.2,3.9,-2.1);g.add(b2);
+    for(const [dx,c,h] of [[-1.7,0xff6b8a,3],[-1.9,0xffd24d,3.5],[1.7,0x6fb8ff,3.1],[1.9,0xb18cff,3.6]])sp_(g,.3,c,dx,h,-2,1,1.15,1);
+    bx(g,1.5,.85,.75,0xffd24d,-6.8,.42,.3);for(let i=0;i<3;i++){const s=esp('📄',.4);s.position.set(-7.2+i*.4,1,.3);g.add(s)}
+    for(const x of[-12,12])tree(g,x,-1,1.4);for(const x of[-11,11])tree(g,x,12,1.3);
+    return g}
+  function mart(){begin('mart',buildMart,(g,T,rest)=>{
+    const tmp=[],add=o=>{g.add(o);tmp.push(o);return o};const n=T.length,X=i=>(i-(n-1)/2)*1.55;
+    const Wk=T.map((o,i)=>({o,x:X(i),hand:0,face:0,sign:add(label(pick(['🛒 세일 중!','🍓 딸기 1+1','🎉 반값 세일','🥛 우유 할인']),1.5,'#ffffff','#ff5c8a'))}));
+    const P=[];let left=60,earn=0,flyers=0,inside=0,rejects=0,spawnT=.2,dance=0,danceCd=0,shoutCd=0,done=false,tI=0;
+    const DOOR=V3(0,.95,-2),EDGE=()=>portrait()?6.5:12;
+    function spawn(){const dir=Math.random()<.5?1:-1,z=pick([1.5,2.4,3.3]);const sp=add(esp(pick(PEOPLE),1.2));sp.position.set(-dir*EDGE(),.95,z);const ic=add(esp('😐',.5));P.push({sp,ic,dir,z,v:rnd(1.1,1.9),int:rnd(0,25),st:'walk',fly:false,rej:0})}
+    const icon=p=>p.st==='store'?'🛍️':p.fly?'📄':p.rej>0?'🙅':p.int>70?'😍':p.int>40?'🙂':'😐';
+    function give(p){let w=Wk[0];for(const k of Wk)if(Math.abs(k.x-p.sp.position.x)<Math.abs(w.x-p.sp.position.x))w=k;w.hand=.8;w.face=Math.atan2(p.sp.position.x-w.x,p.sp.position.z-.4);
+      const fl=add(esp('📄',.4));fl.position.set(w.x,1.3,.6);fl.userData={to:p.sp,t:0};
+      if(Math.random()<.12+p.int/100*.85){p.fly=true;flyers++;earn+=200;sayP(w.o,pick(['전단지 받아가세요~','오늘 세일이에요!','꼭 들러주세요~']),'happy');if(Math.random()<.3+p.int/140){p.st='store';p.v*=1.15}}
+      else{p.rej=1.6;p.int=Math.max(0,p.int-15);rejects++;fl.visible=false;sayP(w.o,pick(['힝… 괜찮아요!','다음엔 받아주세요~','앗 바쁘시구나']),'sulk')}}
+    const inf=()=>`⏱ ${Math.ceil(left)}초 · 💰 ${won(earn)} · 📄 ${flyers}장 · 🛒 ${inside}명`;
+    function hud(){hudRender({title:'🛒 피비마트 홍보',info:inf(),fam:'',alert:'',panel:'<div class="s-panel" style="padding:6px 10px;font-size:.84rem">👆 지나가는 사람을 톡해서 전단지! 😍일수록 잘 받고 마트에 들어가</div>',
+      rows:['<button id="j-dn" class="big">🎵 다같이 춤!</button><button id="j-sh" class="big">📣 외치기</button>','<button id="j-quit">🏠 그만하기</button>'],
+      bind:h=>{h.querySelector('#j-dn').onclick=()=>{if(done)return;if(danceCd>0){big('숨 좀 돌리고! '+Math.ceil(danceCd)+'초',.9);return}dance=3.6;danceCd=7.5;T.forEach(o=>o.r.energy=clamp((o.r.energy??80)-.8));big('🎵 피비 댄스 타임!',1.2);T.forEach((o,i)=>setTimeout(()=>{if(!done)sayP(o,pick(['룰루랄라~','피비마트 최고!','같이 춤춰요~']),'happy')},i*250))};
+        h.querySelector('#j-sh').onclick=()=>{if(done)return;if(shoutCd>0)return;shoutCd=3;P.forEach(p=>{if(p.st==='walk'&&Math.abs(p.sp.position.x)<9)p.int=Math.min(100,p.int+12)});T.forEach((o,i)=>setTimeout(()=>{if(!done)sayP(o,pick(['피비마트 세일해요~!','딸기가 1+1!','놀러 오세요~','오늘만 반값이에요!']),'happy')},i*220))};
+        h.querySelector('#j-quit').onclick=()=>finish()}})}
+    function finish(){if(done)return;done=true;P.forEach(p=>{p.sp.visible=false;p.ic.visible=false});payout(T,earn,'마트 홍보',[`📄 전단지 ${flyers}장 · 🛒 손님 ${inside}명 입장 · 🙅 거절 ${rejects}번`],mart)}
+    hud();big('사람을 톡해서 전단지 주기!',2.4);
+    SCN={lockMain:true,input(type,e){if(type==='up'&&!done){let best=null,bd=75;for(const p of P){if(p.st!=='walk'||p.fly)continue;const s=scr(p.sp.position);const d=Math.hypot(s.x-e.clientX,s.y-e.clientY);if(d<bd){bd=d;best=p}}if(best)give(best)}return true},
+      cleanup(){tmp.forEach(o=>g.remove(o));mainPairAct=null},update(dt){const now=performance.now()/1000;
+      lookCam(V3(0,portrait()?6.2:4.6,portrait()?17.2:11),V3(0,1.6,.5),Math.min(1,dt*4));sunFollow(V3(0,0,0));sitRest(rest,i=>V3(-8.2+(i%3)*.9,0,1+Math.floor(i/3)*.9),.4);
+      Wk.forEach(w=>{w.hand=Math.max(0,w.hand-dt);const p=V3(w.x,0,.4);let a,m='idle',ry=w.hand>0?w.face:0;if(done||dance>0){a={hop:9,armUp:1,wig:1};m='dance'}else if(w.hand>0){a={armFwd:1}}else a={armUp:.3};put(w.o,p,ry,a,m);
+        const sc=w.o.main?pet.scale.x:w.o.c.g.scale.x;w.sign.position.set(w.x,2.5*sc+.35+(dance>0?Math.abs(Math.sin(now*8))*.12:0),.45);w.sign.visible=!done});
+      if(done)return;left-=dt;if(left<=0){finish();return}dance=Math.max(0,dance-dt);danceCd=Math.max(0,danceCd-dt);shoutCd=Math.max(0,shoutCd-dt);
+      spawnT-=dt;if(spawnT<=0){spawnT=portrait()?rnd(.9,1.8):rnd(.7,1.5);if(P.filter(p=>p.st!=='gone').length<10)spawn()}
+      for(const p of P.slice()){const s=p.sp.position;p.rej=Math.max(0,p.rej-dt);
+        if(p.st==='walk'){const near=Math.abs(s.x)<(n*1.55)/2+2.2;if(near&&!p.fly)p.int=Math.min(100,p.int+dt*(3+n*1.6));if(dance>0&&Math.abs(s.x)<7.5&&!p.fly)p.int=Math.min(100,p.int+dt*28);
+          s.x+=p.dir*p.v*dt*(p.int>60&&near&&!p.fly?.45:.8);s.y=.95+Math.abs(Math.sin(now*7+p.v*9))*.06;if(Math.abs(s.x)>EDGE()+.5){p.st='gone'}}
+        else if(p.st==='store'){const d=DOOR.clone().sub(s);d.y=0;if(d.length()<.3){p.st='gone';inside++;const m=Math.round(rnd(8,16))*100;earn+=m;big('🛒 +'+won(m),.8)}else s.addScaledVector(d.normalize(),Math.min(d.length(),dt*p.v*1.2))}
+        p.ic.position.set(s.x,s.y+1.05,s.z);setE(p.ic,icon(p));if(p.st==='gone'){g.remove(p.sp);g.remove(p.ic);P.splice(P.indexOf(p),1)}}
+      tmp.forEach(o=>{const u=o.userData;if(u&&u.to){u.t+=dt*2.4;const tg=u.to.position;o.position.lerp(V3(tg.x,tg.y+.2,tg.z),Math.min(1,u.t));if(u.t>=1){o.visible=false;u.to=null}}});
+      tI+=dt;if(tI>.25){tI=0;info(inf());const b=S3D.hud.querySelector('#j-dn');if(b){b.disabled=danceCd>0;b.textContent=danceCd>0?'🎵 쉬는 중 '+Math.ceil(danceCd):'🎵 다같이 춤!'}}}};
+  })}
+
+  /* ======================= 🍓 딸기 농장 ======================= */
+  function buildFarm(){const g=new THREE.Group();sky(g,'#86ccff','#f4fbff');
+    ground(g,24,(x,W)=>{const P=v=>(v+24)/48*W;x.fillStyle='#8fd87c';x.fillRect(0,0,W,W);for(let i=0;i<400;i++){x.fillStyle=Math.random()<.5?'#86d073':'#9ae088';x.fillRect(Math.random()*W,Math.random()*W,5,5)}x.fillStyle='#b98a5e';for(let r=0;r<5;r++){const z=-3+r*1.5;x.fillRect(P(-7.3),P(z-.48),P(7.3)-P(-7.3),P(z+.48)-P(z-.48))}});
+    bx(g,4,3,3.4,0xe0584f,-10,1.5,-6.5);const rf=new THREE.Mesh(new THREE.ConeGeometry(3,1.8,4),M_(0x8a3a34));rf.position.set(-10,3.9,-6.5);rf.rotation.y=Math.PI/4;g.add(rf);bx(g,1.4,2,.1,0xffffff,-10,1,-4.77);
+    for(let x=-8;x<=8;x+=1.6)cy(g,.06,.06,.9,0xffffff,x,.45,-5.2);const rl=bx(g,16.4,.08,.08,0xffffff,0,.75,-5.2);
+    for(const [x,z] of [[12,-6],[12,3],[-12,3],[-13,8]])tree(g,x,z,1.4);
+    cy(g,.5,.38,.55,0xc98d5a,9,.28,1.5);const bk=esp('🍓',.5);bk.position.set(9,.75,1.5);g.add(bk);
+    const sg=label('🍓 피비 딸기농장',4,'#ff5c8a','#ffffff');sg.position.set(0,3.4,-6.2);g.add(sg);
+    const plants=[];for(let r=0;r<5;r++)for(let c=0;c<11;c++){const x=-6+c*1.2,z=-3+r*1.5;sp_(g,.36,0x4fae4a,x,.24,z,1.25,.7,1.25);const grn=sp_(g,.13,0x9be07a,x+.12,.52,z+.18);const ber=esp('🍓',.5);ber.position.set(x+.1,.62,z+.22);g.add(ber);const spk=esp('✨',.42);spk.position.set(x+.35,.95,z+.22);g.add(spk);plants.push({x,z,grn,ber,spk})}
+    g.userData={plants};return g}
+  function farm(){begin('farm',buildFarm,(g,T,rest)=>{
+    const PL=g.userData.plants;let left=60,berries=0,mine=0,golds=0,broke=0,eaten=0,boostCd=0,done=false,tI=0;
+    const show=p=>{p.grn.visible=p.st===1;p.ber.visible=p.st===2;p.spk.visible=p.st===2&&p.gold;p.ber.scale.setScalar(p.gold?.62:.5)};
+    PL.forEach(p=>{const r=Math.random();p.st=r<.42?2:r<.8?1:0;p.gold=p.st===2&&Math.random()<.05;p.t=p.st===2?rnd(8,14):rnd(2,7);p.claim=null;show(p)});
+    const W=T.map((o,i)=>({o,pos:V3(-4+i*1.6,0,4.3),tgt:null,pick:0,boost:0}));
+    function harvest(p,by){const v=p.gold?5:1;berries+=v;if(p.gold)golds++;p.st=0;p.t=rnd(2.5,5);p.claim=null;p.gold=false;show(p);return v}
+    const inf=()=>`⏱ ${Math.ceil(left)}초 · 🍓 ${berries}개 · 💰 ${won(berries*150)}`;
+    function hud(){hudRender({title:'🍓 딸기 농장 알바',info:inf(),fam:'',alert:'',panel:'<div class="s-panel" style="padding:6px 10px;font-size:.84rem">👆 빨간 🍓만 톡! 초록 딸기는 아직 안 익었어 · ✨는 5개 값</div>',
+      rows:['<button id="j-bs" class="big">🧺 다같이 힘내!</button>','<button id="j-quit">🏠 그만하기</button>'],
+      bind:h=>{h.querySelector('#j-bs').onclick=()=>{if(done)return;if(boostCd>0){big('조금 쉬었다가! '+Math.ceil(boostCd)+'초',.9);return}boostCd=10;W.forEach((w,i)=>{w.boost=5;setTimeout(()=>{if(!done)sayP(w.o,pick(['영차영차!','더 빨리 딸게~','딸기 다 따버리자!']),'happy')},i*200)});big('🧺 피비들 속도 UP!',1.1)};h.querySelector('#j-quit').onclick=()=>finish()}})}
+    function finish(){if(done)return;done=true;payout(T,berries*150,'딸기 농장',[`🍓 ${berries}개 (내가 ${mine}개 · 피비들이 ${berries-mine}개)${golds?` · ✨황금 딸기 ${golds}개`:''}`,broke?`🟢 덜 익은 딸기 ${broke}번 땄어…`:'🟢 덜 익은 딸기는 하나도 안 건드렸어!',eaten?`😋 피비들이 몰래 ${eaten}개 먹었대`:''].filter(Boolean),farm)}
+    hud();big('빨간 딸기를 톡해서 따기!',2.4);W.forEach((w,i)=>setTimeout(()=>sayP(w.o,pick(['딸기 냄새 좋다~','바구니 가득 채우자!','빨간 것만 따야지!']),'happy'),400+i*350));
+    SCN={lockMain:true,input(type,e){if(type==='up'&&!done){let best=null,bd=62;for(const p of PL){if(p.st===0)continue;const s=scr(V3(p.x,.55,p.z));const d=Math.hypot(s.x-e.clientX,s.y-e.clientY);if(d<bd){bd=d;best=p}}
+        if(best){if(best.st===2){const v=harvest(best);mine+=v;big(v>1?'✨ 황금 딸기! +5':'🍓 +1',.6)}else{best.st=0;best.t=rnd(2.5,5);show(best);broke++;berries=Math.max(0,berries-1);big('🟢 아직 안 익었어! -1',.9);sayP(pick(W).o,pick(['앗 그건 초록색이야~','아직 시어!']),'sulk')}info(inf())}}return true},
+      cleanup(){mainPairAct=null},update(dt){const now=performance.now()/1000;
+      lookCam(V3(0,portrait()?12.2:10,portrait()?11.8:9.5),V3(0,0,-.3),Math.min(1,dt*4));sunFollow(V3(0,0,0));sitRest(rest,i=>V3(8.2+(i%2)*.9,0,2.6+Math.floor(i/2)*.9),-.6);
+      if(done){W.forEach(w=>put(w.o,w.pos,0,{hop:6,armUp:1},'banzai'));return}
+      left-=dt;if(left<=0){finish();return}boostCd=Math.max(0,boostCd-dt);
+      for(const p of PL){p.t-=dt;if(p.t<=0){if(p.st===0){p.st=1;p.t=rnd(3,6.5)}else if(p.st===1){p.st=2;p.gold=Math.random()<.05;p.t=rnd(9,14)}else{p.st=0;p.t=rnd(2,4);p.claim=null}show(p)}}
+      W.forEach(w=>{w.boost=Math.max(0,w.boost-dt);if(!w.tgt||w.tgt.st!==2||w.tgt.claim!==w){if(w.tgt&&w.tgt.claim===w)w.tgt.claim=null;w.tgt=null;w.pick=0;let bd=1e9;for(const p of PL){if(p.st!==2||p.claim)continue;const d=Math.hypot(p.x-w.pos.x,p.z+.55-w.pos.z);if(d<bd){bd=d;w.tgt=p}}if(w.tgt)w.tgt.claim=w}
+        let ry=0,a={},m='idle';if(w.tgt){const tg=V3(w.tgt.x,0,w.tgt.z+.6),d=tg.clone().sub(w.pos);d.y=0;const dist=d.length();
+          if(dist>.1){ry=Math.atan2(d.x,d.z);w.pos.addScaledVector(d.normalize(),Math.min(dist,dt*1.25*(w.boost>0?1.7:1)));a={walk:1};m='hop'}
+          else{ry=Math.PI;a={armFwd:1};w.pick+=dt*(w.boost>0?2:1);if(w.pick>=1.4){const p=w.tgt;w.tgt=null;w.pick=0;if(Math.random()<.07&&!p.gold){p.st=0;p.t=rnd(2.5,5);p.claim=null;show(p);eaten++;w.o.r.fun=clamp(w.o.r.fun+3);w.o.r.food=clamp((w.o.r.food??80)+2);sayP(w.o,'냠… 하나만 먹을게 헤헤','happy')}else{const v=harvest(p);if(v>1)sayP(w.o,'황금 딸기다!!','happy');else if(Math.random()<.15)sayP(w.o,pick(['하나 땄다!','빨갛다~','바구니에 쏙!']),'happy')}}}}
+        put(w.o,w.pos,ry,a,m)});
+      tI+=dt;if(tI>.25){tI=0;info(inf())}}};
+  })}
+
+  window.JOB3D={burger,mart,farm};
 })();
 </script>
 
