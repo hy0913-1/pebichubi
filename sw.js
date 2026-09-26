@@ -1,4 +1,4 @@
-const VERSION='pebichubi-v9-1';
+const VERSION='pebichubi-v9-2';
 const CORE_CACHE=VERSION+'-core';
 const RUNTIME_CACHE=VERSION+'-runtime';
 const CORE=[

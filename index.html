@@ -337,6 +337,33 @@ html.m.land .mcard{max-width:560px;border-radius:22px;border-bottom:1.5px solid 
 </style>
 
 
+
+<style id="decor-mobile-v9-2">
+.roomp>*{flex-shrink:0}
+.roomp .rbar,.roomp .mhint{display:none}
+html.m body:has(.stage.edit) header,html.m body:has(.stage.edit) .exp,html.m body:has(.stage.edit) .stats,
+html.m body:has(.stage.edit) .timehud,html.m body:has(.stage.edit) .mood,html.m body:has(.stage.edit) .viewbtn,
+html.m body:has(.stage.edit) .carehud,html.m body:has(.stage.edit) .bag,html.m body:has(.stage.edit) .mobile-nav,
+html.m body:has(.stage.edit) #mtool{display:none!important}
+html.m .stage.edit{outline-width:2px;outline-offset:-4px}
+html.m .roomp.show{bottom:calc(var(--sb) + 8px);max-height:54dvh;gap:6px;padding:8px 10px;border-radius:20px}
+html.m .roomp .rhead{display:none}
+html.m .roomp .rbar{display:flex;align-items:center;gap:6px}
+html.m .roomp .rbar b{flex:1;min-width:0;font-family:"Jua",sans-serif;font-weight:400;font-size:.86rem;color:var(--ink);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html.m .roomp .rbar button{min-height:40px;padding:4px 12px;font-size:.84rem;flex:0 0 auto}
+html.m .roomp .rfoot #r-ok{display:none}
+html.m .roomp.mini .rtabs,html.m .roomp.mini .rmodes,html.m .roomp.mini .rinv,html.m .roomp.mini .catalog,
+html.m .roomp.mini .themegrid,html.m .roomp.mini .rhint{display:none}
+html.m .roomp.mini .mhint{display:block;font-size:.72rem}
+html.m .roomp .rtabs button,html.m .roomp .rmodes button{min-height:38px;flex:0 0 auto}
+html.m .roomp .selbox{padding:6px;gap:5px}
+html.m .roomp .selbox b{font-size:.84rem;font-weight:400}
+html.m .roomp .selbox .rsel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+html.m .roomp .selbox .rsel button{min-width:0;min-height:44px;padding:3px 2px;font-size:.74rem;line-height:1.15;white-space:normal}
+html.m .roomp .rfoot{flex-wrap:nowrap}
+html.m .roomp .rfoot button{flex:1 1 0;min-width:0;min-height:40px;font-size:.8rem;padding:4px 6px}
+html.m.land body:has(.stage.edit) .roomp.show{right:calc(var(--sr) + 8px);max-height:calc(100dvh - var(--st) - var(--sb) - 16px)}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -470,6 +497,8 @@ function advanceGameClock(realSec){if(!S.adopted)return;const mult=1,total=realS
 function offlineGrow(r,hours){if(!r||hours<=0)return;let xp=Math.min(48,hours)*1.0;r.exp=(r.exp||0)+xp;while(r.lv<29&&r.exp>=r.lv*30){r.exp-=r.lv*30;r.lv++;checkSchoolGraduation(r,true)}if(r.lv>=29)r.exp=Math.min(r.exp,r.lv*30-1)}
 // ===== 🌙 자리 비움(AFK) 시뮬레이션 =====
 const AFK_MAX_MIN=14*1440;
+// 자리 비운 동안은 느리게: 현실 30분 = 게임 4시간 (평소 현실 12분 = 게임 1일)
+const AFK_GAME_MIN_PER_REAL_SEC=240/1800;
 // 현실로 비운 시간에 따른 서운함 단계
 const AFK_TIERS=[{h:168,love:45,sulk:3,funMax:20,icon:'💔',t:'일주일 넘게 안 와서 많이 서운해해',say:['…이제 온 거야?','우리 버린 줄 알았어…','계속 기다렸는데…']},{h:72,love:30,sulk:2,funMax:40,icon:'😭',t:'며칠 동안 안 와서 외로웠대',say:['왜 이렇게 늦게 왔어…','심심했단 말이야','보고 싶었어…']},{h:24,love:20,sulk:1,funMax:100,icon:'😤',t:'하루 넘게 안 와서 삐졌어',say:['흥!','어디 갔다 왔어','늦었잖아…']},{h:12,love:8,sulk:0,funMax:100,icon:'🥺',t:'조금 보고 싶었대',say:['왔다!','기다렸어~','보고 싶었어!']}];let AFK_REPORT=null;
 function isSulk(r){return !!r&&((r.love??50)<25||(r.sulkUntil>0&&typeof gameAbs==='function'&&r.sulkUntil>gameAbs()))}
@@ -481,8 +510,8 @@ function afkFinishSchool(r,rep){const sc=ensureSchool(r);sc.awayUntil=0;sc.atten
   sc.reports.push({day:S.gameDay||1,scores:{...scores},gains:{...gains},xp,note:'혼자 알아서 등교했어'});if(sc.reports.length>12)sc.reports.shift();r.exp=(r.exp||0)+xp;
   const k=(r.color||'')+r.name;rep.school[k]=(rep.school[k]||0)+1;S.diary.push({d:Date.now(),t:'🏫 '+r.name+' 학교 '+sc.attendance+'일차 (혼자 등교) · 평균 '+schoolAvg(r).toFixed(1)+'점'})}
 function applyOffline(sec){if(!S.adopted||sec<60)return'';
-  const refs=allPebiRefs(),many=refs.length>1,gmin=Math.min(AFK_MAX_MIN,sec*GAME_MIN_PER_REAL_SEC),dins=S.furn.filter(f=>f.id==='dining'),hasBath=S.furn.some(f=>f.id==='bathroom');
-  const rep={sec,min:gmin,capped:sec*GAME_MIN_PER_REAL_SEC>AFK_MAX_MIN,from:gameAbs(),meals:0,toilet:0,shower:0,accident:0,school:{},lv:{},starve:0,stock0:dins.reduce((n,f)=>n+diningStock(f),0),stock1:0,hasDining:dins.length>0,hasBath,sulk:false,money:0};
+  const refs=allPebiRefs(),many=refs.length>1,gmin=Math.min(AFK_MAX_MIN,sec*AFK_GAME_MIN_PER_REAL_SEC),dins=S.furn.filter(f=>f.id==='dining'),hasBath=S.furn.some(f=>f.id==='bathroom');
+  const rep={sec,min:gmin,capped:sec*AFK_GAME_MIN_PER_REAL_SEC>AFK_MAX_MIN,from:gameAbs(),meals:0,toilet:0,shower:0,accident:0,school:{},lv:{},starve:0,stock0:dins.reduce((n,f)=>n+diningStock(f),0),stock1:0,hasDining:dins.length>0,hasBath,sulk:false,money:0};
   const lv0={};for(const q of refs)lv0[q.r.id]=q.r.lv;
   let left=gmin;const STEP=10;const lost={};
   while(left>0){const st=Math.min(STEP,left);left-=st;const rs=st/GAME_MIN_PER_REAL_SEC;
@@ -2146,22 +2175,26 @@ function sellSelected(){if(sel<0||!S.furn[sel])return;rememberDecor();const f=S.
 function storeSelected(){if(sel<0||!S.furn[sel])return;rememberDecor();const f=S.furn.splice(sel,1)[0];S.finv[f.id]=(S.finv[f.id]||0)+1;sel=-1;renderFurn();renderRoomPanel();save();toast('📦 보관함에 넣었어')}
 function rotateSelected(dir){if(sel<0||!S.furn[sel])return;rememberDecor();S.furn[sel].r=(S.furn[sel].r||0)+dir*Math.PI/4;renderFurn();renderRoomPanel();save()}
 function focusSelected(){if(sel<0||!S.furn[sel])return;const f=S.furn[sel];shiftViewTarget(new THREE.Vector3(f.x,.65,f.z))}
+let ROOMP_MINI=true;
 function renderRoomPanel(){ensureDecorState();const room=currentRoom(),ks=Object.keys(S.finv).filter(k=>S.finv[k]>0&&FURN[k]),un=unlockedRooms();let h=`<div class="rhead"><b>${FACIL[S.activeRoom]?'🏟️ '+FACIL[S.activeRoom].nm:'🏠 '+HOUSES[S.house||0].nm} · ${ROOM_META[S.activeRoom][0]} ${ROOM_META[S.activeRoom][1]}</b><span>가구 ${S.furn.length}개 · 💰 ${won(S.money)}</span></div>`;
   h+='<div class="rtabs">'+ROOM_META.map((r,i)=>roomUnlocked(i)?`<button data-room="${i}" class="${i===S.activeRoom?'on':''}">${r[0]} ${r[1]}</button>`:FACIL[i]?`<button data-room="${i}">🔒 ${r[0]} ${r[1]} · ${won(FACIL[i].price)}</button>`:`<button disabled>🔒 ${r[1]}</button>`).join('')+'</div>';
   h+='<div class="rmodes">'+[['inv','📦 보관함'],['shop','🛍️ 가구 상점'],['wall','🖼️ 벽지'],['floor','🧱 바닥']].map(x=>`<button data-rtab="${x[0]}" class="${ROOM_TAB===x[0]?'on':''}">${x[1]}</button>`).join('')+'</div>';
-  if(ROOM_TAB==='inv')h+='<div class="rrow">'+(ks.length?ks.map(k=>`<button class="it" data-f="${k}" title="${FURN_NM[k][1]}">${FURN_NM[k][0]}<i>${S.finv[k]}</i></button>`).join(''):'<span class="hint">보관함이 비었어 · 가구 상점에서 사거나 배치한 가구를 📦 넣어봐</span>')+'</div>';
+  if(ROOM_TAB==='inv')h+='<div class="rrow rinv">'+(ks.length?ks.map(k=>`<button class="it" data-f="${k}" title="${FURN_NM[k][1]}">${FURN_NM[k][0]}<i>${S.finv[k]}</i></button>`).join(''):'<span class="hint">보관함이 비었어 · 가구 상점에서 사거나 배치한 가구를 📦 넣어봐</span>')+'</div>';
   if(ROOM_TAB==='shop')h+='<div class="catalog">'+Object.keys(FURN).map(k=>{const pr=furnPrice(k),n=FURN_NM[k];return`<button class="catitem" data-buyf="${k}"><span>${n[0]}</span><small>${n[1]}</small><em>${won(pr)}</em></button>`}).join('')+'</div>';
   if(ROOM_TAB==='wall')h+='<div class="themegrid">'+Object.entries(WALL_STYLE).map(([k,v])=>{const own=S.decorOwned.wall.includes(k),on=room.wall===k;return`<button data-theme="wall:${k}" class="${on?'on':''}">${v.emo} ${v.nm}<br><small>${on?'사용 중':own?'보유':won(v.price)}</small></button>`}).join('')+'</div>';
   if(ROOM_TAB==='floor')h+='<div class="themegrid">'+Object.entries(FLOOR_STYLE).map(([k,v])=>{const own=S.decorOwned.floor.includes(k),on=room.floor===k;return`<button data-theme="floor:${k}" class="${on?'on':''}">${v.emo} ${v.nm}<br><small>${on?'사용 중':own?'보유':won(v.price)}</small></button>`}).join('')+'</div>';
-  if(sel>=0&&S.furn[sel]){const f=S.furn[sel],n=FURN_NM[f.id];h+=`<div class="selbox"><b>${n[0]} ${n[1]} 선택됨</b>${f.id==='dining'?`<div class="hint">🍚 남은 밥 ${diningStock(f)} / ${DINING_MAX}인분 · 배부름 35↓ 자동 식사</div><div class="rrow"><button id="r-refill">+5인분 · ${won(Math.min(5,DINING_MAX-diningStock(f))*700)}</button><button id="r-station">⚙️ 관리</button></div>`:f.id==='bathroom'?`<div class="hint">🚿 청결 45↓ 자동 샤워 · 🚽 용변 75↑ 자동 사용</div><div class="rrow"><button id="r-station">⚙️ 욕실 관리</button></div>`:''}<div class="rrow"><button id="r-left">↶ 45°</button><button id="r-right">↷ 45°</button><button id="r-focus">🎯 보기</button><button id="r-put">📦 보관</button><button id="r-sell" class="danger">💰 판매 ${won(Math.round(furnPrice(f.id)*.5))}</button></div></div>`}
-  h+=`<div class="rrow"><button id="r-snap" class="${S.decorSnap?'on':''}"># 격자 ${S.decorSnap?'ON':'OFF'}</button><button id="r-undo" ${DECOR_UNDO.length?'':'disabled'}>↩️ 되돌리기${DECOR_UNDO.length?' ('+DECOR_UNDO.length+')':''}</button><button class="ok" id="r-ok">✅ 꾸미기 끝</button></div>`;
-  h+='<div class="hint">가구를 끌어서 이동 · 빈 곳을 톡해도 선택 가구 이동 · 🍚 식탁과 🚿 욕실을 놓으면 여러 피비를 자동으로 돌볼 수 있어</div>';$('roomp').innerHTML=h;
+  if(sel>=0&&S.furn[sel]){const f=S.furn[sel],n=FURN_NM[f.id];h+=`<div class="selbox"><b>${n[0]} ${n[1]} 선택됨</b>${f.id==='dining'?`<div class="hint">🍚 남은 밥 ${diningStock(f)} / ${DINING_MAX}인분 · 배부름 35↓ 자동 식사</div><div class="rrow"><button id="r-refill">+5인분 · ${won(Math.min(5,DINING_MAX-diningStock(f))*700)}</button><button id="r-station">⚙️ 관리</button></div>`:f.id==='bathroom'?`<div class="hint">🚿 청결 45↓ 자동 샤워 · 🚽 용변 75↑ 자동 사용</div><div class="rrow"><button id="r-station">⚙️ 욕실 관리</button></div>`:''}<div class="rrow rsel"><button id="r-left">↶ 45°</button><button id="r-right">↷ 45°</button><button id="r-focus">🎯 보기</button><button id="r-put">📦 보관</button><button id="r-sell" class="danger">💰 판매 ${won(Math.round(furnPrice(f.id)*.5))}</button></div></div>`}
+  h+=`<div class="rrow rfoot"><button id="r-snap" class="${S.decorSnap?'on':''}"># 격자 ${S.decorSnap?'ON':'OFF'}</button><button id="r-undo" ${DECOR_UNDO.length?'':'disabled'}>↩️ 되돌리기${DECOR_UNDO.length?' ('+DECOR_UNDO.length+')':''}</button><button class="ok" id="r-ok">✅ 꾸미기 끝</button></div>`;
+  h+='<div class="hint rhint">가구를 끌어서 이동 · 빈 곳을 톡해도 선택 가구 이동 · 🍚 식탁과 🚿 욕실을 놓으면 여러 피비를 자동으로 돌볼 수 있어</div>';
+  h=`<div class="rbar"><button id="r-fold">${ROOMP_MINI?'▴ 가구·벽지':'▾ 접기'}</button><b>${ROOM_META[S.activeRoom][0]} ${ROOM_META[S.activeRoom][1]} · 💰 ${won(S.money)}</b><button class="ok" id="r-ok2">✅ 끝</button></div>`+h+`<div class="hint mhint">${sel>=0?'끌어서 옮기기 · 빈 곳 톡 = 거기로 이동':'가구를 톡해서 고르기 · 빈 곳 끌기 = 화면 돌리기 · 두 손가락 = 확대/이동'}</div>`;
+  $('roomp').innerHTML=h;$('roomp').classList.toggle('mini',ROOMP_MINI);
+  $('r-fold').onclick=()=>{ROOMP_MINI=!ROOMP_MINI;renderRoomPanel()};$('r-ok2').onclick=()=>toggleEdit(false);
   $('roomp').querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>switchDecorRoom(+b.dataset.room));$('roomp').querySelectorAll('[data-rtab]').forEach(b=>b.onclick=()=>{ROOM_TAB=b.dataset.rtab;renderRoomPanel()});
   $('roomp').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>placeFurn(b.dataset.f));$('roomp').querySelectorAll('[data-buyf]').forEach(b=>b.onclick=()=>buyDecorFurn(b.dataset.buyf));
   $('roomp').querySelectorAll('[data-theme]').forEach(b=>b.onclick=()=>{const [k,v]=b.dataset.theme.split(':');applyDecorTheme(k,v)});
   if($('r-left'))$('r-left').onclick=()=>rotateSelected(-1);if($('r-right'))$('r-right').onclick=()=>rotateSelected(1);if($('r-focus'))$('r-focus').onclick=focusSelected;if($('r-put'))$('r-put').onclick=storeSelected;if($('r-sell'))$('r-sell').onclick=sellSelected;if($('r-refill'))$('r-refill').onclick=()=>refillDining(sel,5);if($('r-station'))$('r-station').onclick=()=>openCareStation(sel);
   $('r-snap').onclick=()=>{S.decorSnap=!S.decorSnap;rebuildDecorGrid();renderRoomPanel();save()};$('r-undo').onclick=undoDecor;$('r-ok').onclick=()=>toggleEdit(false)}
-function placeFurn(id){if(!(S.finv[id]>0)||!FURN[id])return;const p=findPlacement(id,controls.target.x,controls.target.z-.8);if(!p){toast('여긴 자리가 부족해 · 다른 곳을 비워줘');return}rememberDecor();addDiary('furn','방에 첫 가구를 놓았어');S.finv[id]--;if(!S.finv[id])delete S.finv[id];S.furn.push({id,x:p.x,z:p.z,r:0,...(id==='dining'?{stock:0}:{})});sel=S.furn.length-1;renderFurn();renderRoomPanel();save();if(!S.sleeping)say(pick(['오 새 가구!','여기 놓는 거야?','예쁘다~']),'happy')}
+function placeFurn(id){if(!(S.finv[id]>0)||!FURN[id])return;const p=findPlacement(id,controls.target.x,controls.target.z-.8);if(!p){toast('여긴 자리가 부족해 · 다른 곳을 비워줘');return}rememberDecor();addDiary('furn','방에 첫 가구를 놓았어');S.finv[id]--;if(!S.finv[id])delete S.finv[id];S.furn.push({id,x:p.x,z:p.z,r:0,...(id==='dining'?{stock:0}:{})});sel=S.furn.length-1;ROOMP_MINI=true;renderFurn();renderRoomPanel();save();if(!S.sleeping)say(pick(['오 새 가구!','여기 놓는 거야?','예쁘다~']),'happy')}
 
 
 // ---------- 가구 이용 ----------
@@ -2261,10 +2294,10 @@ function fbTick(){const show=!WALK&&!EDIT&&!S.sleeping&&tool==='hand';fbWrap.sty
     b.classList.toggle('on',!!USE&&(USE.i===i||(USE.id==='bed'&&i===S.furn.length)))})}
 
 function toggleEdit(on){if(WALK)return;if(USE)endUse();ensureDecorState();EDIT=on===undefined?!EDIT:on;if(EDIT)cancelCrewCare();sel=-1;edrag=null;decorInvalid=false;$('stage').classList.toggle('edit',EDIT);$('roomp').classList.toggle('show',EDIT);
-  $('tray').classList.remove('show');$('gtray').classList.remove('show');rebuildDecorGrid();if(EDIT){ROOM_TAB='inv';renderRoomPanel();log('🛋️ 인테리어 모드 · 가구를 끌어 배치해봐')}else{if(decorGrid)decorGrid.visible=false;controls.enabled=true;log('방 꾸미기 저장 완료!');save()}}
+  $('tray').classList.remove('show');$('gtray').classList.remove('show');rebuildDecorGrid();if(EDIT){ROOM_TAB='inv';ROOMP_MINI=true;renderRoomPanel();log('🛋️ 인테리어 모드 · 가구를 끌어 배치해봐')}else{if(decorGrid)decorGrid.visible=false;controls.enabled=true;log('방 꾸미기 저장 완료!');save()}}
 $('t-room').onclick=()=>toggleEdit();
 function furnHit(e){setRay(e);const h=ray.intersectObjects(furnObjs,true)[0];return h?h.object.userData.fi:-1}
-function editDown(e){const i=furnHit(e);edrag={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,moved:0,i,before:i>=0?decorSnapshot():null,ox:i>=0?S.furn[i].x:0,oz:i>=0?S.furn[i].z:0,changed:false};decorInvalid=false;if(i>=0){sel=i;controls.enabled=false;renderRoomPanel()}else{controls.enabled=false}}
+function editDown(e){const i=furnHit(e);edrag={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,moved:0,i,before:i>=0?decorSnapshot():null,ox:i>=0?S.furn[i].x:0,oz:i>=0?S.furn[i].z:0,changed:false};decorInvalid=false;if(i>=0){sel=i;ROOMP_MINI=true;controls.enabled=false;renderRoomPanel()}else{controls.enabled=true}}
 function editMove(e){if(!edrag)return;const dx=e.clientX-edrag.lx,dy=e.clientY-edrag.ly;edrag.moved+=Math.hypot(dx,dy);edrag.lx=e.clientX;edrag.ly=e.clientY;if(edrag.i<0)return;setRay(e);
   if(ray.ray.intersectPlane(floorPlane,_hp)){const f=S.furn[edrag.i],x=snapN(_hp.x),z=snapN(_hp.z);if(placementOK(f.id,x,z,edrag.i)){f.x=x;f.z=z;furnObjs[edrag.i].position.set(x,0,z);edrag.changed=Math.abs(x-edrag.ox)>.001||Math.abs(z-edrag.oz)>.001;decorInvalid=false}else decorInvalid=true}}
 function editUp(e){if(!edrag)return;const d=edrag;edrag=null;controls.enabled=true;decorInvalid=false;if(d.i>=0){if(d.changed)rememberDecor(d.before);renderFurn();renderRoomPanel();save();return}
@@ -3051,6 +3084,13 @@ const away=Math.max(0,(Date.now()-(S.t||Date.now()))/1000),offlineMsg=applyOffli
 buildHouse(S.house||0);
 if(S.adopted&&!S.diary.length)S.diary.push({d:S.born,t:S.name+'를 처음 만난 날 🐣'});curSc=STAGES[stageOf(S.lv)].sc;dailyGift();renderTray();renderRoomToys();renderFurn();renderUI();save();updateVoiceBtn();loadOrig();loadClips();if(!VIEW_FOLLOW)shiftViewTarget(HOME_VIEW);log(offlineMsg|| (VIEW_FOLLOW?'🎥 선택한 피비 따라가기':'🧭 자유 시점 · 피비를 톡 누르면 개별 관리'));if(offlineMsg)setTimeout(()=>{if(AFK_REPORT)showAfkReport();else toast(offlineMsg,4200)},1400);loop();
 setInterval(save,5000);setInterval(nag,9000);
+function resumeAfk(){try{if(!S||!S.adopted)return;if(WALK||VENUE||EDIT||USE||window.__mgPause||(S.activeRoom||0)>=4)return;
+  const away=(Date.now()-(S.t||Date.now()))/1000;if(away<60)return;const msg=applyOffline(away);if(!msg)return;
+  curSc=stageSc(S.lv);if(typeof mainTag==='function')mainTag();
+  if(S.sleeping&&anim!=='sleep')setAnim('sleep',true);else if(!S.sleeping&&anim==='sleep')setAnim('wake');
+  renderUI();save();log(msg);setTimeout(()=>{if(AFK_REPORT)showAfkReport();else toast(msg,4200)},600)}catch(e){console.warn('resumeAfk',e)}}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else resumeAfk()});
+window.addEventListener('pagehide',()=>{try{save()}catch(_){}});
 </script>
 
 <script id="minigames">
