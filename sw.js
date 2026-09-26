@@ -1,8 +1,8 @@
-const VERSION='pebichubi-v9-8';
+const VERSION='pebichubi-v11-0';
 const CORE_CACHE=VERSION+'-core';
 const RUNTIME_CACHE=VERSION+'-runtime';
 const CORE=[
-  './', './index.html', './manifest.webmanifest', './savefix.js',
+  './', './index.html', './manifest.webmanifest',
   './icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'
 ];
 const EXTERNAL=[
@@ -33,18 +33,6 @@ self.addEventListener('activate',event=>{
     await self.clients.claim();
   })());
 });
-async function withSaveFix(res){
-  if(!res)return res;
-  try{
-    const html=await res.text();
-    if(html.includes('savefix.js')) return new Response(html,{status:res.status,statusText:res.statusText,headers:res.headers});
-    const patched=html.replace('</body>','<script src="./savefix.js"></script></body>');
-    const headers=new Headers(res.headers);
-    headers.delete('content-length');
-    headers.delete('content-encoding');
-    return new Response(patched,{status:res.status,statusText:res.statusText,headers});
-  }catch(e){return res}
-}
 self.addEventListener('fetch',event=>{
   const req=event.request;
   if(req.method!=='GET') return;
@@ -53,10 +41,9 @@ self.addEventListener('fetch',event=>{
       try{
         const fresh=await fetch(req);
         const c=await caches.open(CORE_CACHE); c.put('./index.html',fresh.clone()).catch(()=>{});
-        return await withSaveFix(fresh);
+        return fresh;
       }catch(e){
-        const cached=(await caches.match(req)) || (await caches.match('./index.html'));
-        return await withSaveFix(cached);
+        return (await caches.match(req)) || (await caches.match('./index.html'));
       }
     })());
     return;
