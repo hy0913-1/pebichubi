@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>페비츄비 진행도 복구</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;background:#eee9ff;color:#342b57;margin:0;padding:20px}
+main{max-width:760px;margin:auto;background:#fff;border:2px solid #c9bff2;border-radius:22px;padding:18px;box-shadow:0 8px 30px #0001}
+h1{font-size:1.35rem;margin:0 0 8px}
+p{line-height:1.5}
+textarea{width:100%;height:38vh;min-height:220px;box-sizing:border-box;border:2px solid #c9bff2;border-radius:14px;padding:12px;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+button,a{appearance:none;border:0;border-radius:14px;padding:12px 16px;font-weight:800;font-size:1rem;text-decoration:none}
+button{background:#6f5bd4;color:#fff}
+button.secondary{background:#e7e1ff;color:#443579}
+#msg{margin-top:12px;padding:12px;border-radius:12px;background:#f7f4ff;white-space:pre-wrap;word-break:break-word}
+.ok{background:#e8fff0!important;color:#176b38}.bad{background:#fff0f0!important;color:#9a2525}
+small{display:block;color:#766c9d;margin-top:8px;line-height:1.45}
+</style>
+</head>
+<body>
+<main>
+<h1>🛟 페비츄비 진행도 복구</h1>
+<p>예전 <b>PEBI1:</b> 저장 코드를 아래에 붙여넣고 복구하면 이 기기의 페비츄비 저장 데이터로 넣어줄게.</p>
+<textarea id="code" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="PEBI1:..."></textarea>
+<div class="row">
+<button class="secondary" id="paste">📋 클립보드에서 붙여넣기</button>
+<button id="restore">✅ 코드 검사 + 복구</button>
+</div>
+<div id="msg">아직 코드를 검사하지 않았어.</div>
+<small>이 페이지는 공백·줄바꿈·제로폭 문자가 섞여도 정리해서 읽도록 되어 있어. 코드 자체가 중간에서 잘린 경우에는 복구할 수 없어.</small>
+</main>
+<script>
+const KEY='pebichubi-3d-v1', ta=document.getElementById('code'), msg=document.getElementById('msg');
+function setMsg(t,ok){msg.textContent=t;msg.className=ok===true?'ok':ok===false?'bad':''}
+function decodePEBI(raw){
+  let c=String(raw||'').replace(/[\u200B-\u200D\uFEFF]/g,'').trim();
+  const p=c.indexOf('PEBI1:');
+  if(p<0)throw new Error('PEBI1: 로 시작하는 저장 코드를 찾지 못했어.');
+  let b64=c.slice(p+6).replace(/\s+/g,'').replace(/-/g,'+').replace(/_/g,'/');
+  b64=b64.replace(/[^A-Za-z0-9+/=]/g,'');
+  if(!b64.length)throw new Error('저장 데이터가 비어 있어.');
+  b64=b64.replace(/=+$/,'');
+  b64+='='.repeat((4-b64.length%4)%4);
+  let bin;
+  try{bin=atob(b64)}catch(e){throw new Error('Base64 부분을 읽지 못했어. 코드가 중간에서 잘렸을 가능성이 커.');}
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  let text;
+  try{text=new TextDecoder('utf-8',{fatal:true}).decode(bytes)}catch(e){text=new TextDecoder('utf-8').decode(bytes)}
+  let d;
+  try{d=JSON.parse(text)}catch(e){throw new Error('저장 데이터 JSON이 끝까지 완성되지 않았어. 복사 중 일부가 누락됐을 수 있어.');}
+  if(!d||typeof d.food!=='number')throw new Error('페비츄비 저장 데이터 형식이 아니야.');
+  return d;
+}
+document.getElementById('paste').onclick=async()=>{
+  try{ta.value=await navigator.clipboard.readText();setMsg('붙여넣었어. 이제 “코드 검사 + 복구”를 눌러줘.');}
+  catch(e){setMsg('자동 붙여넣기가 막혔어. 입력칸을 길게 눌러 직접 붙여넣어줘.',false)}
+};
+document.getElementById('restore').onclick=()=>{
+  try{
+    const d=decodePEBI(ta.value);
+    const crew=Array.isArray(d.crew)?d.crew.length:0;
+    setMsg('코드 정상 ✅\n이름: '+(d.name||'페비츄비')+'\n레벨: '+(d.lv??'?')+'\n돈: '+Number(d.money||0).toLocaleString('ko-KR')+'원\n함께 있는 피비: '+(crew+1)+'마리\n\n저장 데이터를 이 기기에 적용했어. 게임으로 돌아갈게!',true);
+    localStorage.setItem(KEY,JSON.stringify(d));
+    setTimeout(()=>location.href='./index.html?restore='+Date.now(),900);
+  }catch(e){setMsg('복구 실패 ❌\n'+e.message+'\n\n코드 길이: '+ta.value.length.toLocaleString('ko-KR')+'자',false)}
+};
+</script>
+</body>
+</html>
